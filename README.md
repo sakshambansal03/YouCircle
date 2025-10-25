@@ -93,7 +93,7 @@ Follow these steps to run the project locally on your machine:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/<your-username>/<your-repo-name>.git
+git clone https://github.com/sakshambansal03/YouCircle.git
 ```
 ### 2. Naivgate to the local project repository using the terminal
 ```bash
