@@ -21,20 +21,19 @@ function HomeScreen() {
       price: 500
     },
     {
-      title: "Calculus Tutoring - Ace Your Exams",
-      category: "Tutoring",
-      categoryClass: "tutoring",
-      description: "Experienced math tutor offering one-on-one calculus help.",
-      seller: "Sarah Chen",
+      title: "Haircut Services",
+      category: "Services",
+      categoryClass: "services",
+      description: "Get professional haircut services from a certified stylist.",
+      seller: "Matthew Zhang",
       price: 25
     },
     {
-      title: "Calculus Tutoring - Ace Your Exams",
-      category: "Tutoring",
-      categoryClass: "tutoring",
-      description: "Experienced math tutor offering one-on-one calculus help.",
-      seller: "Sarah Chen",
-      price: 25
+      title: "Selling a bicycle",
+      category: "Classifieds",
+      categoryClass: "classifieds",
+      description: "I am selling my bicycle for $75. It is in great condition and has been well maintained.",
+      price: 75
     }
   ];
 

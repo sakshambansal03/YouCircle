@@ -124,6 +124,13 @@
   .listing-category.electronics {
     background-color: #3498db;
   }
+
+  .listing-category.services {
+    background-color: #3498db;
+  }
+  .listing-category.classifieds {
+    background-color: #3498db;
+  }
   
   .listing-description {
     font-size: 15px;
