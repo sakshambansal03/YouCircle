@@ -1,7 +1,43 @@
 import React from 'react';
 import './HomeScreen.css';
+import ListingCard from '../ListingCard.js'
 
 function HomeScreen() {
+  const listings = [
+    {
+      title: "Calculus Tutoring - Ace Your Exams",
+      category: "Tutoring",
+      categoryClass: "tutoring",
+      description: "Experienced math tutor offering one-on-one calculus help.",
+      seller: "Sarah Chen",
+      price: 25
+    },
+    {
+      title: "Used iPhone 13 - Excellent Condition",
+      category: "Electronics",
+      categoryClass: "electronics",
+      description: "Selling my iPhone 13 in great condition. Includes charger and case.",
+      seller: "John Doe",
+      price: 500
+    },
+    {
+      title: "Calculus Tutoring - Ace Your Exams",
+      category: "Tutoring",
+      categoryClass: "tutoring",
+      description: "Experienced math tutor offering one-on-one calculus help.",
+      seller: "Sarah Chen",
+      price: 25
+    },
+    {
+      title: "Calculus Tutoring - Ace Your Exams",
+      category: "Tutoring",
+      categoryClass: "tutoring",
+      description: "Experienced math tutor offering one-on-one calculus help.",
+      seller: "Sarah Chen",
+      price: 25
+    }
+  ];
+
   return (
     <div className="home-screen">
       <header className="home-header">
@@ -16,41 +52,9 @@ function HomeScreen() {
       <h2 className="recent-listings-title">Recent Listings</h2>
 
       <div className="listings-container">
-        {/* Listing Card 1: Calculus Tutoring */}
-        <div className="listing-card">
-          <div className="listing-image-placeholder">No image</div>
-          <div className="listing-content">
-            <h3 className="listing-title">Calculus Tutoring - Ace Your Exams</h3>
-            <span className="listing-category tutoring">Tutoring</span>
-            <p className="listing-description">Experienced math tutor offering one-on-one calculus help.</p>
-            <div className="listing-footer">
-              <div className="listing-seller">
-                <i className="fa fa-user"></i>
-                <span>Sarah Chen</span>
-                <span className="listing-verified">Verified</span>
-              </div>
-              <span className="listing-price">$25</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Listing Card 2: Used iPhone 13 */}
-        <div className="listing-card">
-          <div className="listing-image-placeholder">No image</div>
-          <div className="listing-content">
-            <h3 className="listing-title">Used iPhone 13 - Excellent Condition</h3>
-            <span className="listing-category electronics">Electronics</span>
-            <p className="listing-description">Selling my iPhone 13 in great condition. Includes charger and case.</p>
-            <div className="listing-footer">
-              <div className="listing-seller">
-                <i className="fa fa-user"></i>
-                <span>John Doe</span>
-                <span className="listing-verified">Verified</span>
-              </div>
-              <span className="listing-price">$500</span>
-            </div>
-          </div>
-        </div>
+        {listings.map((item, index) => (
+          <ListingCard key={index} {...item} />
+        ))}
       </div>
     </div>
   );
