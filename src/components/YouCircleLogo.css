@@ -1,0 +1,44 @@
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+}
+
+.logo-symbol {
+  flex-shrink: 0;
+}
+
+.logo-text {
+  font-family: 'Arial', sans-serif;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #667eea;
+  letter-spacing: -0.5px;
+}
+
+/* Animation for the logo */
+.logo-symbol {
+  animation: logoFloat 3s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Hover effect */
+.logo-container:hover .logo-symbol {
+  animation-play-state: paused;
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
+.logo-container:hover .logo-text {
+  color: #764ba2;
+  transition: color 0.3s ease;
+}

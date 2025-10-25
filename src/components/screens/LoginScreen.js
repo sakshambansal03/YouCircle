@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import YouCircleLogo from '../YouCircleLogo';
 import './LoginScreen.css';
 
 function LoginScreen() {
@@ -40,7 +41,9 @@ function LoginScreen() {
   return (
     <div className="login-screen">
       <div className="login-box">
-        <h1 className="login-title">YouCircle</h1>
+        <div className="logo-section">
+          <YouCircleLogo size={80} showText={true} />
+        </div>
         <h2 className="login-subtitle">Welcome Back</h2>
         <form onSubmit={handleSubmit} className="login-form">
           <div className="input-group">
@@ -79,7 +82,9 @@ function LoginScreen() {
         <div className="signup-overlay">
           <div className="signup-box">
             <div className="signup-header">
-              <h1 className="signup-title">Create Account</h1>
+              <div className="signup-logo-section">
+                <YouCircleLogo size={50} showText={true} />
+              </div>
               <button className="close-btn" onClick={() => setShowSignup(false)}>×</button>
             </div>
             <form onSubmit={handleSignupSubmit} className="signup-form">
