@@ -86,3 +86,32 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Steps to Run the Project
+
+Follow these steps to run the project locally on your machine:
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/<your-username>/<your-repo-name>.git
+```
+### 2. Naivgate to the local project repository using the terminal
+```bash
+cd your-repo-name
+```
+### Install Dependencies
+Make sure you have Node.js and npm installed. If not, 
+```bash
+npm install
+```
+
+### Start the Development Server
+```bash
+npm start
+```
+
+### Open in Your Browser
+Once the app starts, it will automatically open in your default browser.
+If not, visit:
+👉 http://localhost:3000
+
