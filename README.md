@@ -9,7 +9,7 @@ Existing platforms like Facebook Marketplace, Craigslist, or Snapchat Marketplac
 
 -> Too broad and not campus-focused
 
-> Prone to scams or unverified users
+-> Prone to scams or unverified users
 
 -> Difficult to navigate for localized, student-centric needs
 
