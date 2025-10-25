@@ -1,4 +1,22 @@
-# Getting Started with Create React App
+# YouCircle
+
+YouCircle is a peer-to-peer campus marketplace where students can easily discover, book, and offer services, as well as purchase items directly from other students. By fostering affordability, convenience, and trust, YouCircle strengthens student connections while saving time and enhancing campus life and resources.
+
+## Project Objective
+YouCircle's main goal is to create a safe, student-driven ecosystem that allows peers to exchange services and goods easily. The platform aims to address the common challenges college students face — finding affordable, trustworthy, and accessible options for tutoring, personal services, and item exchanges, all within a verified student environment.
+
+## Motivation
+Existing platforms like Facebook Marketplace, Craigslist, or Snapchat Marketplace often fall short for student users. They can be:
+
+-> Too broad and not campus-focused
+
+-> Prone to scams or unverified users
+
+-> Difficult to navigate for localized, student-centric needs
+
+YouCircle solves this by fostering a campus-only community where trust is built on verified student identities and safe in-app interactions.
+
+## Getting Started
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
