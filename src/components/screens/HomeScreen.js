@@ -18,7 +18,12 @@ function HomeScreen() {
       categoryClass: "tutoring",
       description: "Experienced math tutor offering one-on-one calculus help.",
       seller: "Sarah Chen",
-      price: 25
+      price: 25,
+      images: [
+        "https://images.unsplash.com/photo-1509228468512-4e8b5b3c8b0c?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&h=600&fit=crop"
+      ]
     },
     {
       title: "Used iPhone 13 - Excellent Condition",
@@ -27,7 +32,12 @@ function HomeScreen() {
       description: "Selling my iPhone 13 in great condition. Includes charger and case.",
       seller: "John Doe",
       address: 'Pick up at JQA Hall, Southwest',
-      price: 500
+      price: 500,
+      images: [
+        "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1580910051074-3eb694886505?w=800&h=600&fit=crop"
+      ]
     },
     {
       title: "Haircut Services",
@@ -36,7 +46,11 @@ function HomeScreen() {
       description: "Get professional haircut services from a certified stylist.",
       seller: "Matthew Zhang",
       address: 'McKimmie Hall, Southwest',
-      price: 25
+      price: 25,
+      images: [
+        "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&h=600&fit=crop"
+      ]
     },
     {
       title: "Selling a bicycle",
@@ -45,7 +59,12 @@ function HomeScreen() {
       description: "I am selling my bicycle for $75. It is in great condition and has been well maintained.",
       seller: "Joe White",
       address: 'Pick up at Dwight Hall, Northeast',
-      price: 75
+      price: 75,
+      images: [
+        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1502744688674-c619d1586c4a?w=800&h=600&fit=crop"
+      ]
     }
   ];
 
