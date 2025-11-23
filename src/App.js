@@ -10,6 +10,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<LoginScreen />} />    
+          <Route path="/reset-password" element={<LoginScreen />} />
           <Route path="/home" element={<HomeScreen />} />
         </Routes>
       </Router>
