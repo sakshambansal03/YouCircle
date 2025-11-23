@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import YouCircleLogo from '../YouCircleLogo';
 import './LoginScreen.css';
 
 function LoginScreen() {
@@ -42,7 +41,7 @@ function LoginScreen() {
     <div className="login-screen">
       <div className="login-box">
         <div className="logo-section">
-          <YouCircleLogo size={80} showText={true} />
+          YouCircle 
         </div>
         <h2 className="login-subtitle">Welcome Back</h2>
         <form onSubmit={handleSubmit} className="login-form">
@@ -83,7 +82,7 @@ function LoginScreen() {
           <div className="signup-box">
             <div className="signup-header">
               <div className="signup-logo-section">
-                <YouCircleLogo size={50} showText={true} />
+                YouCircle
               </div>
               <button className="close-btn" onClick={() => setShowSignup(false)}>×</button>
             </div>

@@ -1,0 +1,114 @@
+.open-listing-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  
+  .open-listing-modal {
+    background: #fff;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    overflow-y: auto;
+    max-height: 90vh;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  /* Close button */
+  .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #444;
+    transition: color 0.2s;
+  }
+  .close-btn:hover {
+    color: #000;
+  }
+  
+  .open-listing-images {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .open-listing-image {
+    width: 180px;
+    height: 180px;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  .no-image {
+    color: #888;
+    font-style: italic;
+    text-align: center;
+  }
+  
+  .open-listing-details {
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  
+  .open-listing-title {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+  }
+  
+  .open-listing-price {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #2d7a2d;
+    margin-bottom: 10px;
+  }
+  
+  .open-listing-description {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: #777;
+  }
+  
+  .open-listing-address {
+    font-size: 0.95rem;
+    color: #777;
+  }
+  
+  .open-listing-seller {
+    font-size: 0.95rem;
+    color: #777;
+  }
+  
+  .open-listing-review {
+    border-top: 1px solid #ddd;
+    padding-top: 16px;
+  }
+  
+  .open-listing-review h3 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+  }
+  
+  .review-textarea {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 1rem;
+  }

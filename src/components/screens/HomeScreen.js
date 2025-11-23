@@ -26,6 +26,7 @@ function HomeScreen() {
       categoryClass: "electronics",
       description: "Selling my iPhone 13 in great condition. Includes charger and case.",
       seller: "John Doe",
+      address: 'Pick up at JQA Hall, Southwest',
       price: 500
     },
     {
@@ -34,6 +35,7 @@ function HomeScreen() {
       categoryClass: "services",
       description: "Get professional haircut services from a certified stylist.",
       seller: "Matthew Zhang",
+      address: 'McKimmie Hall, Southwest',
       price: 25
     },
     {
@@ -41,6 +43,8 @@ function HomeScreen() {
       category: "Classifieds",
       categoryClass: "classifieds",
       description: "I am selling my bicycle for $75. It is in great condition and has been well maintained.",
+      seller: "Joe White",
+      address: 'Pick up at Dwight Hall, Northeast',
       price: 75
     }
   ];
