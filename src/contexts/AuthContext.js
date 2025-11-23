@@ -79,48 +79,66 @@ export const AuthProvider = ({ children }) => {
       const metadataUpdates = {};
       
       // Split name into first and last if provided
-      if (updates.name) {
+      if (updates.name !== undefined && updates.name.trim() !== '') {
         const nameParts = updates.name.trim().split(' ');
         metadataUpdates.first_name = nameParts[0] || '';
         metadataUpdates.last_name = nameParts.slice(1).join(' ') || '';
-        metadataUpdates.name = updates.name;
+        metadataUpdates.name = updates.name.trim();
       }
 
       if (updates.username !== undefined) {
         metadataUpdates.username = updates.username;
       }
 
+      // Always include phone if it's in the updates (even if empty string to allow clearing)
       if (updates.phone !== undefined) {
-        metadataUpdates.phone = updates.phone;
+        metadataUpdates.phone = updates.phone || ''; // Save empty string if phone is cleared
       }
 
-      // Update user metadata in Supabase
-      const { data, error } = await supabase.auth.updateUser({
-        data: metadataUpdates
-      });
+      // Prepare update object for Supabase
+      const updateObject = {};
+      
+      // Add metadata if there are any updates
+      if (Object.keys(metadataUpdates).length > 0) {
+        updateObject.data = metadataUpdates;
+      }
 
-      if (error) throw error;
-
-      // Update password if provided
+      // Add password if provided
       if (updates.password && updates.password.trim() !== '') {
-        const { error: passwordError } = await supabase.auth.updateUser({
-          password: updates.password
-        });
-
-        if (passwordError) {
-          throw passwordError;
+        // Validate password length (Supabase requires at least 6 characters)
+        if (updates.password.length < 6) {
+          throw new Error('Password must be at least 6 characters long');
         }
+        updateObject.password = updates.password;
       }
 
-      // Reload profile after update
-      if (data?.user) {
-        await loadUserProfile(data.user);
+      // Update user in Supabase (both metadata and password in one call if needed)
+      if (Object.keys(updateObject).length > 0) {
+        const { data, error } = await supabase.auth.updateUser(updateObject);
+
+        if (error) {
+          throw error;
+        }
+
+        // Reload profile after update to get fresh data
+        if (data?.user) {
+          await loadUserProfile(data.user);
+        } else {
+          // If no data returned, refresh from current user
+          const { data: { user: currentUser } } = await supabase.auth.getUser();
+          if (currentUser) {
+            await loadUserProfile(currentUser);
+          }
+        }
+      } else {
+        // No updates to make
+        return { success: true, message: 'No changes to save' };
       }
 
       return { success: true };
     } catch (error) {
       console.error('Error updating profile:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error.message || 'Failed to update profile' };
     }
   };
 

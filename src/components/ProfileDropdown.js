@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ProfileDropdown.css';
 import { useAuth } from '../contexts/AuthContext';
 
 function ProfileDropdown({ profile, onClose }) {
-  const { updateUserProfile } = useAuth();
+  const { updateUserProfile, signOut } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: profile?.name || '',
     email: profile?.email || '',
@@ -31,13 +33,35 @@ function ProfileDropdown({ profile, onClose }) {
     setError(null);
     setSuccess(false);
 
+    // Validate name is not empty
+    if (!formData.name || formData.name.trim() === '') {
+      setError('Name is required');
+      setIsSaving(false);
+      return;
+    }
+
+    // Validate password if provided
+    if (formData.password && formData.password.trim() !== '') {
+      if (formData.password.length < 6) {
+        setError('Password must be at least 6 characters long');
+        setIsSaving(false);
+        return;
+      }
+    }
+
     try {
-      const result = await updateUserProfile({
-        name: formData.name,
-        username: formData.username,
-        phone: formData.phone,
-        password: formData.password || undefined, // Only include if provided
-      });
+      const updates = {
+        name: formData.name.trim(),
+        username: formData.username.trim() || undefined,
+        phone: formData.phone.trim(), // Always include phone, even if empty (to allow clearing)
+      };
+
+      // Only include password if provided and not empty
+      if (formData.password && formData.password.trim() !== '') {
+        updates.password = formData.password;
+      }
+
+      const result = await updateUserProfile(updates);
 
       if (result.success) {
         setSuccess(true);
@@ -89,13 +113,15 @@ function ProfileDropdown({ profile, onClose }) {
             <div className="profile-form-group">
               <label>
                 <i className="fa fa-user"></i>
-                Name
+                Name <span style={{ color: '#e74c3c' }}>*</span>
               </label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
+                required
+                placeholder="Enter your full name"
               />
             </div>
             
@@ -150,7 +176,8 @@ function ProfileDropdown({ profile, onClose }) {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="New password (optional)"
+                placeholder="New password (optional, min 6 characters)"
+                minLength={6}
               />
             </div>
             
@@ -178,6 +205,21 @@ function ProfileDropdown({ profile, onClose }) {
               )}
             </button>
           </form>
+
+          <div className="profile-logout-section">
+            <div className="profile-divider"></div>
+            <button 
+              type="button"
+              onClick={async () => {
+                await signOut();
+                navigate('/');
+                onClose();
+              }}
+              className="logout-button"
+            >
+              <i className="fa fa-sign-out"></i> Logout
+            </button>
+          </div>
         </div>
       </div>
     </div>
