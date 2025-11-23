@@ -2,16 +2,20 @@ import React, { useState } from 'react';
 import './HomeScreen.css';
 import ListingCard from '../ListingCard.js'
 import ProfileDropdown from '../ProfileDropdown.js'
+import AddListingDialog from '../AddListingDialog.js';
 
 function HomeScreen() {
   const [showProfile, setShowProfile] = useState(false);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+
   const [userProfile, setUserProfile] = useState({
     name: "Alex Johnson",
     email: "alex.j@university.edu",
     username: "alexj2024",
     phone: "(555) 123-4567"
   });
-  const listings = [
+
+   const [listings, setListings] = useState([
     {
       title: "Calculus Tutoring - Ace Your Exams",
       category: "Tutoring",
@@ -65,8 +69,13 @@ function HomeScreen() {
         "https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=800&h=600&fit=crop",
         "https://images.unsplash.com/photo-1502744688674-c619d1586c4a?w=800&h=600&fit=crop"
       ]
-    }
-  ];
+    }]
+   );
+
+   const handleAddListing = (newListing) => {
+    setListings((prev) => [newListing, ...prev]); // add to top
+    setShowAddDialog(false);
+  };
 
   const getUserInitials = () => {
     return userProfile.name
@@ -95,13 +104,25 @@ function HomeScreen() {
         </div>
       </header>
 
-      <h2 className="recent-listings-title">Recent Listings</h2>
+      <div className="recent-listings-header">
+        <h2 className="recent-listings-title">Recent Listings</h2>
+        <button className="add-listing-btn" onClick={() => setShowAddDialog(true)}>
+          + Add New Listing
+        </button>
+      </div>
 
       <div className="listings-container">
         {listings.map((item, index) => (
           <ListingCard key={index} {...item} />
         ))}
       </div>
+
+      {showAddDialog && (
+        <AddListingDialog
+          onClose={() => setShowAddDialog(false)}
+          onAdd={handleAddListing}
+        />
+      )}
 
       {showProfile && (
         <ProfileDropdown

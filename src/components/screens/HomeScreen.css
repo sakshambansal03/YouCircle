@@ -210,3 +210,22 @@
     }
   }
   
+.recent-listings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 25px 0 10px 0;
+}
+
+.add-listing-btn {
+  background-color: #3498db;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.2s ease;
+  margin-right: 100px;
+}
