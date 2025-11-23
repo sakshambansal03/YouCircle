@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginScreen.css';
 import logoImage from '../../images/youcircle_logo.png';
+import { supabase } from "../../supabaseClient";
 
 function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -15,19 +16,53 @@ function LoginScreen() {
   });
   const navigate = useNavigate();
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login attempt:', { email, password });
-    // Navigate to home page after successful login
-    navigate('/home');
+
+    if (!email.endsWith("@umass.edu")) {
+      alert("Please use your @umass.edu email");
+      return;
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    console.log("Logged in user:", data.user);
+    navigate("/home");
   };
 
-  const handleSignupSubmit = (e) => {
+  const handleSignupSubmit = async (e) => {
     e.preventDefault();
-    console.log('Signup attempt:', signupData);
-    // Add your signup logic here
-    // For now, just navigate to home after signup
-    navigate('/home');
+
+    if (!signupData.email.endsWith("@umass.edu")) {
+      alert("Please use your @umass.edu email");
+      return;
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+      email: signupData.email,
+      password: signupData.password,
+      options: {
+        data: {
+          first_name: signupData.firstName,
+          last_name: signupData.lastName,
+        }
+      }
+    });
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    alert("Check your email to verify your UMass account");
   };
 
   const handleSignupChange = (e) => {
