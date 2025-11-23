@@ -153,3 +153,42 @@
   transform: scale(0.98);
 }
 
+.save-changes-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profile-error-message {
+  padding: 12px 15px;
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: 8px;
+  color: #c33;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.profile-error-message i {
+  font-size: 16px;
+}
+
+.profile-success-message {
+  padding: 12px 15px;
+  background-color: #efe;
+  border: 1px solid #cfc;
+  border-radius: 8px;
+  color: #3c3;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.profile-success-message i {
+  font-size: 16px;
+}
+

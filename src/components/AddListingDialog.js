@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AddListingDialog.css';
+import { useAuth } from '../contexts/AuthContext';
 
 function AddListingDialog({ onClose, onAdd }) {
+  const { userProfile } = useAuth();
   const [form, setForm] = useState({
     title: '',
     category: '',
     description: '',
-    seller: '',
+    seller: userProfile?.name || '',
     address: '',
     price: '',
     images: []
   });
+
+  useEffect(() => {
+    if (userProfile?.name) {
+      setForm(prev => ({ ...prev, seller: userProfile.name }));
+    }
+  }, [userProfile]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

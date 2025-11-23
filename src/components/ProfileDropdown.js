@@ -1,25 +1,60 @@
 import React, { useState } from 'react';
 import './ProfileDropdown.css';
+import { useAuth } from '../contexts/AuthContext';
 
-function ProfileDropdown({ profile, onClose, onSave }) {
+function ProfileDropdown({ profile, onClose }) {
+  const { updateUserProfile } = useAuth();
   const [formData, setFormData] = useState({
-    name: profile.name || '',
-    email: profile.email || '',
-    username: profile.username || '',
-    phone: profile.phone || '',
+    name: profile?.name || '',
+    email: profile?.email || '',
+    username: profile?.username || '',
+    phone: profile?.phone || '',
     password: ''
   });
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+    // Clear messages when user starts typing
+    if (error) setError(null);
+    if (success) setSuccess(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
+    setIsSaving(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      const result = await updateUserProfile({
+        name: formData.name,
+        username: formData.username,
+        phone: formData.phone,
+        password: formData.password || undefined, // Only include if provided
+      });
+
+      if (result.success) {
+        setSuccess(true);
+        // Clear password field on success
+        setFormData({ ...formData, password: '' });
+        // Close modal after a short delay
+        setTimeout(() => {
+          onClose();
+        }, 1500);
+      } else {
+        setError(result.error || 'Failed to update profile');
+      }
+    } catch (err) {
+      setError(err.message || 'An error occurred while updating your profile');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const getUserInitials = () => {
@@ -73,7 +108,9 @@ function ProfileDropdown({ profile, onClose, onSave }) {
                 type="email"
                 name="email"
                 value={formData.email}
-                onChange={handleChange}
+                disabled
+                style={{ opacity: 0.6, cursor: 'not-allowed' }}
+                title="Email cannot be changed"
               />
             </div>
             
@@ -117,8 +154,28 @@ function ProfileDropdown({ profile, onClose, onSave }) {
               />
             </div>
             
-            <button type="submit" className="save-changes-button">
-              Save Changes
+            {error && (
+              <div className="profile-error-message">
+                <i className="fa fa-exclamation-circle"></i> {error}
+              </div>
+            )}
+            {success && (
+              <div className="profile-success-message">
+                <i className="fa fa-check-circle"></i> Profile updated successfully!
+              </div>
+            )}
+            <button 
+              type="submit" 
+              className="save-changes-button"
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <>
+                  <i className="fa fa-spinner fa-spin"></i> Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
             </button>
           </form>
         </div>

@@ -1,19 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './HomeScreen.css';
 import ListingCard from '../ListingCard.js'
 import ProfileDropdown from '../ProfileDropdown.js'
 import AddListingDialog from '../AddListingDialog.js';
+import { useAuth } from '../../contexts/AuthContext';
 
 function HomeScreen() {
+  const { user, userProfile, loading } = useAuth();
+  const navigate = useNavigate();
   const [showProfile, setShowProfile] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
 
-  const [userProfile, setUserProfile] = useState({
-    name: "Alex Johnson",
-    email: "alex.j@university.edu",
-    username: "alexj2024",
-    phone: "(555) 123-4567"
-  });
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/');
+    }
+  }, [user, loading, navigate]);
 
    const [listings, setListings] = useState([
     {
@@ -73,11 +76,17 @@ function HomeScreen() {
    );
 
    const handleAddListing = (newListing) => {
-    setListings((prev) => [newListing, ...prev]); // add to top
+    // Automatically set seller from authenticated user profile
+    const listingWithSeller = {
+      ...newListing,
+      seller: userProfile?.name || newListing.seller || 'Unknown',
+    };
+    setListings((prev) => [listingWithSeller, ...prev]); // add to top
     setShowAddDialog(false);
   };
 
   const getUserInitials = () => {
+    if (!userProfile?.name) return 'U';
     return userProfile.name
       .split(' ')
       .map((n) => n[0])
@@ -86,10 +95,19 @@ function HomeScreen() {
       .slice(0, 2);
   };
 
-  const handleProfileSave = (updatedProfile) => {
-    setUserProfile(updatedProfile);
-    setShowProfile(false);
-  };
+  if (loading) {
+    return (
+      <div className="home-screen">
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="home-screen">
@@ -124,11 +142,10 @@ function HomeScreen() {
         />
       )}
 
-      {showProfile && (
+      {showProfile && userProfile && (
         <ProfileDropdown
           profile={userProfile}
           onClose={() => setShowProfile(false)}
-          onSave={handleProfileSave}
         />
       )}
     </div>
