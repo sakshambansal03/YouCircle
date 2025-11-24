@@ -210,7 +210,7 @@ function AddListingDialog({ onClose, onAdd }) {
                         className="remove-image-btn"
                         title="Remove image"
                       >
-                        <i className="fa fa-times"></i>
+                        &times;
                       </button>
                     </div>
                   </div>
