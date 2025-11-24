@@ -100,7 +100,7 @@ function LoginScreen() {
       return;
     }
 
-    showError("Check your email to verify your UMass account");
+    showSuccess("Check your email to verify your UMass account");
   };
 
   const handleSignupChange = (e) => {
@@ -312,7 +312,7 @@ function LoginScreen() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@university.edu"
+                    placeholder="Enter your email"
                     required
                   />
                 </div>
@@ -342,7 +342,6 @@ function LoginScreen() {
                   Forgot password?
                 </a>
                 <button type="submit" className="login-button">Sign In</button>
-                <button type="button" className="browse-button">Just browsing?</button>
               </form>
             ) : (
               <form onSubmit={handleSignupSubmit} className="login-form">
@@ -369,16 +368,28 @@ function LoginScreen() {
                   </div>
                 </div>
                 <div className="input-group">
+                  <div className="input-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M22 6L12 13L2 6" stroke="currentColor" strokeWidth="2"/>
+                    </svg>
+                  </div>
                   <input
                     type="email"
                     name="email"
                     value={signupData.email}
                     onChange={handleSignupChange}
-                    placeholder="you@university.edu"
+                    placeholder="Enter your email"
                     required
                   />
                 </div>
                 <div className="input-group">
+                  <div className="input-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" strokeWidth="2"/>
+                    </svg>
+                  </div>
                   <input
                     type="password"
                     name="password"
@@ -433,7 +444,7 @@ function LoginScreen() {
                       type="email"
                       value={forgotPasswordEmail}
                       onChange={(e) => setForgotPasswordEmail(e.target.value)}
-                      placeholder="you@umass.edu"
+                      placeholder="Enter your email"
                       required
                     />
                   </div>
