@@ -18,7 +18,6 @@ function ListingCard({ id, title, category, description, seller, address, price,
         <div className="listing-content">
           <h3 className="listing-title">{title}</h3>
           <span className={`listing-category ${categoryClass}`}>{category}</span>
-          <p className="listing-description">{description}</p>
           <div className="listing-footer">
             <div className="listing-seller">
               <i className="fa fa-user"></i>

@@ -1,0 +1,6 @@
+.listings-screen {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    min-height: calc(100vh - 50px);
+    padding-bottom: 10px
+}

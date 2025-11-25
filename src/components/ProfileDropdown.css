@@ -26,7 +26,7 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   width: 90%;
   max-width: 500px;
-  max-height: 90vh;
+  max-height: 95vh;
   overflow-y: auto;
   z-index: 1001;
 }
@@ -178,14 +178,14 @@
 .profile-success-message {
   padding: 12px 15px;
   background-color: #efe;
-  border: 1px solid #cfc;
+  border: 1px solid rgb(107, 203, 107);
   border-radius: 8px;
   color: #3c3;
-  font-size: 14px;
+  font-size: 15px;
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 10px;
+  margin: 10px;
 }
 
 .profile-success-message i {
@@ -193,7 +193,6 @@
 }
 
 .profile-logout-section {
-  margin-top: 30px;
   padding-top: 20px;
 }
 

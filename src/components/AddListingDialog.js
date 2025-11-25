@@ -14,6 +14,21 @@ function AddListingDialog({ onClose, onAdd }) {
     images: []
   });
 
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const showError = (message) => {
+    setErrorMessage(message);
+
+    // Start fade-out just before clearing
+    setTimeout(() => {
+      const errorElement = document.querySelector('.form-error');
+      if (errorElement) errorElement.classList.add('fade-out');
+    }, 4500);
+
+    // Clear message completely after 5s
+    setTimeout(() => setErrorMessage(''), 5000);
+  };
+
   useEffect(() => {
     if (userProfile?.name) {
       setForm(prev => ({ ...prev, seller: userProfile.name }));
@@ -68,8 +83,8 @@ function AddListingDialog({ onClose, onAdd }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.title || !form.category || !form.seller || !form.price) {
-      alert('Please fill in all required fields');
+    if (!form.title || !form.category || !form.seller || !form.price || form.images.length === 0) {
+      showError("Please fill all required fields");
       return;
     }
     onAdd({
@@ -88,9 +103,15 @@ function AddListingDialog({ onClose, onAdd }) {
         
         <h2 className="dialog-title">Add New Listing</h2>
 
+        {errorMessage && (
+              <div className="form-error">
+                {errorMessage}
+              </div>
+            )}
+
         <form onSubmit={handleSubmit} className="dialog-form">
           <div className="form-group">
-            <label htmlFor="title">
+            <label htmlFor="title" className="required">
               <i className="fa fa-heading"></i> Title
             </label>
             <input
@@ -99,22 +120,30 @@ function AddListingDialog({ onClose, onAdd }) {
               placeholder="Enter listing title"
               value={form.title}
               onChange={handleChange}
-              required
+              // required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="category">
+            <label htmlFor="category" className="required">
               <i className="fa fa-tag"></i> Category
             </label>
-            <input
+            <select
               id="category"
               name="category"
-              placeholder="e.g., Tutoring, Electronics, Services"
               value={form.category}
               onChange={handleChange}
               required
-            />
+              className="category-dropdown"
+            >
+              <option value="" disabled hidden>Select a category</option>
+              <option value="Services">Services</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Study Material">Study Material</option>
+              <option value="Clothing and Accessories">Clothing and Accessories</option>
+              <option value="Miscellaneous">Miscellaneous</option>
+            </select>
           </div>
 
           <div className="form-row">
@@ -128,12 +157,12 @@ function AddListingDialog({ onClose, onAdd }) {
                 placeholder="Your name"
                 value={form.seller}
                 onChange={handleChange}
-                required
+                disabled
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="price">
+              <label htmlFor="price" className="required">
                 <i className="fa fa-dollar-sign"></i> Price
               </label>
               <input
@@ -145,7 +174,7 @@ function AddListingDialog({ onClose, onAdd }) {
                 onChange={handleChange}
                 min="0"
                 step="0.01"
-                required
+                // required
               />
             </div>
           </div>
@@ -170,7 +199,7 @@ function AddListingDialog({ onClose, onAdd }) {
             <textarea
               id="description"
               name="description"
-              placeholder="Describe your listing in detail..."
+              placeholder="Describe your listing in detail"
               value={form.description}
               onChange={handleChange}
               rows="4"
@@ -178,7 +207,7 @@ function AddListingDialog({ onClose, onAdd }) {
           </div>
 
           <div className="form-group">
-            <label className="images-label">
+            <label className="images-label required">
               <i className="fa fa-images"></i> Images
             </label>
             
@@ -191,6 +220,7 @@ function AddListingDialog({ onClose, onAdd }) {
                 multiple
                 onChange={handleFileUpload}
                 className="file-input"
+                // required
               />
               <label htmlFor="file-upload" className="upload-btn">
                 <i className="fa fa-upload"></i> Upload from Device

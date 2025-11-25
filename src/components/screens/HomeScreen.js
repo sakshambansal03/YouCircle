@@ -6,6 +6,8 @@ import ProfileDropdown from '../ProfileDropdown.js'
 import AddListingDialog from '../AddListingDialog.js';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from "../../supabaseClient";
+import SideDrawer from "../SideDrawer.js";
+import Header from '../Header.js';
 
 function HomeScreen() {
   const { user, userProfile, loading } = useAuth();
@@ -89,16 +91,6 @@ function HomeScreen() {
     setShowAddDialog(false);
   };
 
-  const getUserInitials = () => {
-    if (!userProfile?.name) return 'U';
-    return userProfile.name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   if (loading) {
     return (
       <div className="home-screen">
@@ -113,43 +105,37 @@ function HomeScreen() {
 
   return (
     <div className="home-screen">
-      <header className="home-header">
-        <div className="home-logo">YouCircle</div>
-        <div className="home-search-bar">
-          <i className="fa fa-search"></i>
-          <input type="text" placeholder="Search for services, items, or tutors..." />
+      <Header/>
+      <SideDrawer />
+
+      <div className="home-content">
+        <div className="recent-listings-header">
+          <h2 className="recent-listings-title">Recent Listings</h2>
+          <button className="add-listing-btn" onClick={() => setShowAddDialog(true)}>
+            + Add New Listing
+          </button>
         </div>
-        <div className="home-avatar" onClick={() => setShowProfile(true)} style={{ cursor: 'pointer' }}>
-          {getUserInitials()}
+
+        <div className="listings-container">
+          {listings.map((item) => (
+            <ListingCard key={item.id} {...item} />
+          ))}
         </div>
-      </header>
 
-      <div className="recent-listings-header">
-        <h2 className="recent-listings-title">Recent Listings</h2>
-        <button className="add-listing-btn" onClick={() => setShowAddDialog(true)}>
-          + Add New Listing
-        </button>
+        {showAddDialog && (
+          <AddListingDialog
+            onClose={() => setShowAddDialog(false)}
+            onAdd={handleAddListing}
+          />
+        )}
+
+        {showProfile && userProfile && (
+          <ProfileDropdown
+            profile={userProfile}
+            onClose={() => setShowProfile(false)}
+          />
+        )}
       </div>
-
-      <div className="listings-container">
-        {listings.map((item) => (
-          <ListingCard key={item.id} {...item} />
-        ))}
-      </div>
-
-      {showAddDialog && (
-        <AddListingDialog
-          onClose={() => setShowAddDialog(false)}
-          onAdd={handleAddListing}
-        />
-      )}
-
-      {showProfile && userProfile && (
-        <ProfileDropdown
-          profile={userProfile}
-          onClose={() => setShowProfile(false)}
-        />
-      )}
     </div>
   );
 }

@@ -1,0 +1,43 @@
+.side-drawer {
+  width: 230px;
+  height: calc(100vh - 50px);  
+  position: fixed;
+  top: 80px;               
+  left: 0;
+  background: #fff;
+  border-right:  1px solid #e0e0e0;
+  box-shadow: 1px 0 8px rgba(0, 0, 0, 0.15);
+  /* padding-top: 30px;
+  padding-left: 30px; */
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 900;
+}
+
+.drawer-title {
+  font-size: 22px;
+  margin-bottom: 10px;
+  padding-top: 18px;
+  padding-left: 12px;
+  font-size: 24px;
+}
+
+.drawer-item {
+  font-size: 18px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-weight: 400;
+}
+
+.drawer-item:hover {
+  background: rgba(57, 54, 54, 0.08);
+}
+
+.drawer-item.active {
+    background: rgba(0, 0, 0, 0.15);
+    font-weight: 600;
+}

@@ -101,6 +101,17 @@ function ProfileDropdown({ profile, onClose }) {
             ×
           </button>
         </div>
+
+        {error && (
+              <div className="profile-error-message">
+                <i className="fa fa-exclamation-circle"></i> {error}
+              </div>
+            )}
+            {success && (
+              <div className="profile-success-message">
+                <i className="fa fa-check-circle"></i> Profile updated successfully!
+              </div>
+            )}
         
         <div className="profile-modal-body">
           <div className="profile-avatar-container">
@@ -140,7 +151,7 @@ function ProfileDropdown({ profile, onClose }) {
               />
             </div>
             
-            <div className="profile-form-group">
+            {/* <div className="profile-form-group">
               <label>
                 <i className="fa fa-user"></i>
                 Username
@@ -151,7 +162,7 @@ function ProfileDropdown({ profile, onClose }) {
                 value={formData.username}
                 onChange={handleChange}
               />
-            </div>
+            </div> */}
             
             <div className="profile-form-group">
               <label>
@@ -180,17 +191,7 @@ function ProfileDropdown({ profile, onClose }) {
                 minLength={6}
               />
             </div>
-            
-            {error && (
-              <div className="profile-error-message">
-                <i className="fa fa-exclamation-circle"></i> {error}
-              </div>
-            )}
-            {success && (
-              <div className="profile-success-message">
-                <i className="fa fa-check-circle"></i> Profile updated successfully!
-              </div>
-            )}
+          
             <button 
               type="submit" 
               className="save-changes-button"
@@ -207,7 +208,6 @@ function ProfileDropdown({ profile, onClose }) {
           </form>
 
           <div className="profile-logout-section">
-            <div className="profile-divider"></div>
             <button 
               type="button"
               onClick={async () => {
