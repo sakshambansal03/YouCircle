@@ -1,37 +1,33 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./SideDrawer.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBagShopping, faList, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 export default function SideDrawer() {
   const navigate = useNavigate();
   const location = useLocation(); 
 
+  const drawerItems = [
+    { title: "Browse All", path: "/home", icon: faBagShopping },
+    { title: "Your Listings", path: "/listings", icon: faList },
+    { title: "Messages", path: "/messages", icon: faEnvelope },
+  ];
+
   return (
     <div className="side-drawer">
       <h2 className="drawer-title">Menu</h2>
 
-      <div
-        className={`drawer-item ${location.pathname === "/home" ? "active" : ""}`}
-        onClick={() => navigate("/home")}
-      >
-        Browse All
-      </div>
-
-      <div
-        className={`drawer-item ${
-          location.pathname === "/listings" ? "active" : ""
-        }`}
-        onClick={() => navigate("/listings")}
-      >
-        Your Listings
-      </div>
-
-      <div
-        className={`drawer-item ${location.pathname === "/messages" ? "active" : ""}`}
-        onClick={() => navigate("/messages")}
-      >
-        Messages
-      </div>
+      {drawerItems.map((item) => (
+        <div
+          key={item.path}
+          className={`drawer-item ${location.pathname === item.path ? "active" : ""}`}
+          onClick={() => navigate(item.path)}
+        >
+          <FontAwesomeIcon icon={item.icon} className="drawer-icon" />
+          {item.title}
+        </div>
+      ))}
     </div>
   );
 }
