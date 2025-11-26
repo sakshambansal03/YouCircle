@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../supabaseClient';
 
 function OpenListing({ listing, onClose }) {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const navigate = useNavigate();
   const [message, setMessage] = useState('Hello, is this still available?');
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -57,6 +57,19 @@ function OpenListing({ listing, onClose }) {
         conversationId = existingConv.id;
       } else {
         // Create new conversation
+        // Get buyer name (current user)
+        const buyerName = userProfile?.name || user.email?.split('@')[0] || 'Buyer';
+        
+        // Get seller name from listing
+        let sellerName = listing.seller;
+        if (!sellerName && listing.id) {
+          const { data: listingData } = await supabase
+            .from('listings')
+            .select('seller_name')
+            .eq('id', listing.id)
+            .single();
+          sellerName = listingData?.seller_name || 'Unknown';
+        }
 
         const { data: newConv, error: convError } = await supabase
           .from('conversations')
@@ -64,6 +77,8 @@ function OpenListing({ listing, onClose }) {
             listing_id: listing.id,
             seller_id: sellerId,
             buyer_id: user.id,
+            buyer_name: buyerName,
+            seller_name: sellerName,
           })
           .select()
           .single();
