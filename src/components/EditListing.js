@@ -20,19 +20,24 @@ function EditListing({ listing, onClose, onUpdate, onDelete }) {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
-  const categories = [
-    'Services',
-    'Electronics',
-    'Furniture',
-    'Study Material',
-    'Clothing and Accessories',
-    'Miscellaneous'
-  ];
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Combine existing and new images for display
   const allImages = [...existingImages, ...newImages];
   const mainImage = allImages[selectedImageIndex] || null;
+
+  const showError = (message) => {
+    setErrorMessage(message);
+
+    // Start fade-out just before clearing
+    setTimeout(() => {
+      const errorElement = document.querySelector('.form-error');
+      if (errorElement) errorElement.classList.add('fade-out');
+    }, 4500);
+
+    // Clear message completely after 5s
+    setTimeout(() => setErrorMessage(''), 5000);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,16 +77,22 @@ function EditListing({ listing, onClose, onUpdate, onDelete }) {
     e.target.value = '';
   };
 
-  const handleRemoveExistingImage = (index) => {
-    const imageUrl = existingImages[index];
-    setImagesToDelete(prev => [...prev, imageUrl]);
-    setExistingImages(prev => prev.filter((_, i) => i !== index));
-    
-    // Adjust selected index if needed
-    if (selectedImageIndex >= existingImages.length + newImages.length - 1) {
-      setSelectedImageIndex(Math.max(0, selectedImageIndex - 1));
-    }
-  };
+    const handleRemoveExistingImage = (index) => {
+        const imageUrl = existingImages[index];
+
+        setImagesToDelete(prev => [...prev, imageUrl]);
+
+        setExistingImages(prev => {
+            const updated = prev.filter((_, i) => i !== index);
+
+            const totalImages = updated.length + newImages.length;
+            if (selectedImageIndex >= totalImages) {
+            setSelectedImageIndex(Math.max(0, totalImages - 1));
+            }
+
+            return updated;
+        });
+    };
 
   const handleRemoveNewImage = (index) => {
     setNewImages(prev => prev.filter((_, i) => i !== index));
@@ -97,69 +108,95 @@ function EditListing({ listing, onClose, onUpdate, onDelete }) {
     e.preventDefault();
     if (saving) return;
 
-    setSaving(true);
+    const totalImages = existingImages.length + newImages.length;
+
+    if (totalImages === 0) {
+        showError("Please upload at least one image");
+        return; 
+    }
+
+  setSaving(true);
+
+  const fetchListingImages = async () => {
     try {
-      // Update listing details
-      const { error } = await supabase
-        .from('listings')
-        .update({
-          title: formData.title.trim(),
-          category: formData.category,
-          description: formData.description.trim(),
-          price: parseFloat(formData.price) || 0,
-          address: formData.address.trim(),
-        })
-        .eq('id', listing.id);
+      const { data, error } = await supabase
+        .from('listing_images')
+        .select('image_url')
+        .eq('listing_id', listing.id);
 
       if (error) {
-        console.error('Error updating listing:', error);
-        alert('Failed to update listing. Please try again.');
-        setSaving(false);
+        console.error('Failed to fetch images:', error);
         return;
       }
 
-      // Delete removed images from database
-      if (imagesToDelete.length > 0) {
-        for (const imageUrl of imagesToDelete) {
-          const { error: deleteError } = await supabase
-            .from('listing_images')
-            .delete()
-            .eq('listing_id', listing.id)
-            .eq('image_url', imageUrl);
-          
-          if (deleteError) {
-            console.error('Error deleting image:', deleteError);
-          }
-        }
-      }
-
-      // Insert new images directly as data URLs (matching existing pattern)
-      if (newImages.length > 0) {
-        const imagesToInsert = newImages.map(url => ({
-          listing_id: listing.id,
-          image_url: url,
-        }));
-
-        const { error: imagesError } = await supabase
-          .from('listing_images')
-          .insert(imagesToInsert);
-
-        if (imagesError) {
-          console.error('Error adding new images:', imagesError);
-        }
-      }
-
-      if (onUpdate) {
-        onUpdate();
-      }
-      onClose();
+      setExistingImages(data.map(img => img.image_url));
+      setImagesToDelete([]);
+      setSelectedImageIndex(0); // reset main image selection
     } catch (err) {
-      console.error('Error updating listing:', err);
-      alert('An error occurred. Please try again.');
-    } finally {
-      setSaving(false);
+      console.error('Unexpected error fetching images:', err);
     }
   };
+
+  try {
+    const { error: updateError } = await supabase
+      .from('listings')
+      .update({
+        title: formData.title.trim(),
+        category: formData.category,
+        description: formData.description.trim(),
+        price: parseFloat(formData.price) || 0,
+        address: formData.address.trim(),
+      })
+      .eq('id', listing.id);
+
+    if (updateError) {
+      console.error('Error updating listing:', updateError);
+      showError('Failed to update listing. Please try again.');
+      return; 
+    }
+
+    if (imagesToDelete.length > 0) {
+      const { error: bulkDeleteError } = await supabase
+        .from('listing_images')
+        .delete()
+        .eq('listing_id', listing.id)
+        .in('image_url', imagesToDelete);
+
+      if (bulkDeleteError) {
+        console.error('Error deleting images:', bulkDeleteError);
+        showError('Some images could not be deleted.');
+        await fetchListingImages(); 
+        return; 
+      }
+    }
+
+    if (newImages.length > 0) {
+      const imagesToInsert = newImages.map(url => ({
+        listing_id: listing.id,
+        image_url: url,
+      }));
+
+      const { error: imagesError } = await supabase
+        .from('listing_images')
+        .insert(imagesToInsert);
+
+      if (imagesError) {
+        console.error('Error adding new images:', imagesError);
+        showError('Some new images could not be added.');
+        await fetchListingImages();
+        return; 
+      }
+    }
+    
+    onUpdate?.();
+    onClose();
+  } catch (err) {
+    console.error('Error updating listing:', err);
+    showError('An unexpected error occurred. Please try again.');
+  } finally {
+    setSaving(false);
+  }
+};
 
   const handleDelete = async () => {
     if (deleting) return;
@@ -262,7 +299,7 @@ function EditListing({ listing, onClose, onUpdate, onDelete }) {
 
           <div className="edit-listing-form-section">
             <h2 className="edit-listing-header">
-              <i className="fa fa-edit"></i> Edit Listing
+                Edit Listing
             </h2>
 
             <form onSubmit={handleSubmit} className="edit-form">
@@ -288,10 +325,12 @@ function EditListing({ listing, onClose, onUpdate, onDelete }) {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Select a category</option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
+                    <option value="Services">Services</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Furniture">Furniture</option>
+                    <option value="Study Material">Study Material</option>
+                    <option value="Clothing and Accessories">Clothing and Accessories</option>
+                    <option value="Miscellaneous">Miscellaneous</option>
                 </select>
               </div>
 
@@ -339,7 +378,7 @@ function EditListing({ listing, onClose, onUpdate, onDelete }) {
               {/* Image Management Section */}
               <div className="form-group">
                 <label>
-                  <i className="fa fa-images"></i> Images
+                  Images
                 </label>
                 
                 <div className="upload-section">
@@ -352,9 +391,15 @@ function EditListing({ listing, onClose, onUpdate, onDelete }) {
                     className="file-input"
                   />
                   <label htmlFor="image-upload" className="upload-btn">
-                    <i className="fa fa-upload"></i> Add Images
+                    Add Images
                   </label>
                 </div>
+
+                {errorMessage && (
+                    <div className="form-error">
+                        {errorMessage}
+                    </div>
+                )}
 
                 {/* Image Grid with Delete Option */}
                 {allImages.length > 0 && (
@@ -364,11 +409,11 @@ function EditListing({ listing, onClose, onUpdate, onDelete }) {
                         <img src={img} alt={`Listing ${index + 1}`} />
                         <button
                           type="button"
-                          className="remove-image-btn"
+                          className="close-btn image-close-btn"
                           onClick={() => handleRemoveExistingImage(index)}
                           title="Remove image"
                         >
-                          <i className="fa fa-times"></i>
+                            &times;
                         </button>
                       </div>
                     ))}
@@ -378,11 +423,11 @@ function EditListing({ listing, onClose, onUpdate, onDelete }) {
                         <span className="new-badge">NEW</span>
                         <button
                           type="button"
-                          className="remove-image-btn"
+                          className="close-btn image-close-btn"
                           onClick={() => handleRemoveNewImage(index)}
                           title="Remove image"
                         >
-                          <i className="fa fa-times"></i>
+                          &times;
                         </button>
                       </div>
                     ))}
@@ -398,11 +443,11 @@ function EditListing({ listing, onClose, onUpdate, onDelete }) {
                 >
                   {saving ? (
                     <>
-                      <i className="fa fa-spinner fa-spin"></i> Saving...
+                      Saving...
                     </>
                   ) : (
                     <>
-                      <i className="fa fa-check"></i> Save Changes
+                      Save Changes
                     </>
                   )}
                 </button>
@@ -413,7 +458,7 @@ function EditListing({ listing, onClose, onUpdate, onDelete }) {
                   onClick={() => setShowDeleteConfirm(true)}
                   disabled={deleting}
                 >
-                  <i className="fa fa-trash"></i> Delete Listing
+                  Delete Listing
                 </button>
               </div>
             </form>
@@ -421,10 +466,7 @@ function EditListing({ listing, onClose, onUpdate, onDelete }) {
             {showDeleteConfirm && (
               <div className="delete-confirm-overlay" onClick={() => setShowDeleteConfirm(false)}>
                 <div className="delete-confirm-modal" onClick={(e) => e.stopPropagation()}>
-                  <div className="delete-confirm-icon">
-                    <i className="fa fa-exclamation-triangle"></i>
-                  </div>
-                  <h3>Delete Listing?</h3>
+                  <h3>Delete Listing</h3>
                   <p>Are you sure you want to delete this listing? This action cannot be undone.</p>
                   <div className="delete-confirm-actions">
                     <button

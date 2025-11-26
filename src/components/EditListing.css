@@ -86,7 +86,7 @@
 }
 
 .edit-listing-image-section {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f5f5f5;
   padding: 30px;
   display: flex;
   flex-direction: column;
@@ -333,31 +333,20 @@
   letter-spacing: 0.5px;
 }
 
-.remove-image-btn {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background: rgba(255, 255, 255, 0.95);
-  width: 24px;
-  height: 24px;
-  border: none;
-  font-size: 12px;
-  cursor: pointer;
-  color: #dc3545;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 5;
-  transition: all 0.2s;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  padding: 0;
+.image-close-btn {
+  top: 4px !important;
+  right: 4px !important;
+  width: 20px  !important;
+  height: 20px  !important;
+  font-size: 20px !important;
+  background: white !important;
 }
 
-.remove-image-btn:hover {
-  background: #dc3545;
-  color: white;
-  transform: scale(1.1);
+/* Disable ALL hover effects */
+.image-close-btn:hover {
+  background: inherit !important;
+  color: inherit !important;
+  transform: none !important;
 }
 
 .form-group label i {
@@ -456,22 +445,6 @@
   animation: slideUp 0.3s ease-out;
 }
 
-.delete-confirm-icon {
-  width: 70px;
-  height: 70px;
-  background: linear-gradient(135deg, #ff6b6b 0%, #dc3545 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 20px;
-}
-
-.delete-confirm-icon i {
-  font-size: 32px;
-  color: white;
-}
-
 .delete-confirm-modal h3 {
   font-size: 1.5rem;
   color: #1a1a1a;
@@ -508,7 +481,7 @@
 }
 
 .confirm-delete-btn {
-  background: linear-gradient(135deg, #ff6b6b 0%, #dc3545 100%);
+  background: #dc3545;
   color: white;
   border: none;
   padding: 12px 24px;
@@ -563,4 +536,15 @@
   .delete-confirm-modal {
     margin: 20px;
   }
+}
+
+.form-error {
+  background: rgba(255, 0, 0, 0.1);
+  color: #b91c1c; /* Tailwind red-700 */
+  border-left: 4px solid #b91c1c;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }

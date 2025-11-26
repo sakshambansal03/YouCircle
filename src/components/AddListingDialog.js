@@ -237,7 +237,7 @@ function AddListingDialog({ onClose, onAdd }) {
                       <button
                         type="button"
                         onClick={() => handleRemoveImage(index)}
-                        className="remove-image-btn"
+                        className="close-btn image-close-btn"
                         title="Remove image"
                       >
                         &times;
