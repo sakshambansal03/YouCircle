@@ -22,50 +22,168 @@ function HomeScreen() {
     if (!loading && !user) navigate('/');
 
     if (user) fetchListings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading]);
 
   const fetchListings = async () => {
-    // Fetch listings
-    const { data: listingsData, error } = await supabase
-      .from('listings')
-      .select(`id, title, category, description, price, address, seller_id, created_at, 
-               listing_images (image_url)`)
-      .order('created_at', { ascending: false });
+    try {
+      // First try with seller_name, if that fails, try without it
+      let { data: listingsData, error } = await supabase
+        .from('listings')
+        .select(`id, title, category, description, price, address, seller_id, seller_name, created_at, 
+                 listing_images (image_url)`)
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching listings:', error);
-    } else {
+      // If seller_name column doesn't exist, try without it
+      if (error && error.message && error.message.includes('seller_name')) {
+        console.warn('seller_name column not found, fetching without it');
+        const result = await supabase
+          .from('listings')
+          .select(`id, title, category, description, price, address, seller_id, created_at, 
+                   listing_images (image_url)`)
+          .order('created_at', { ascending: false });
+        
+        listingsData = result.data;
+        error = result.error;
+      }
+
+      if (error) {
+        console.error('Error fetching listings:', error);
+        return;
+      }
+
+      if (!listingsData || listingsData.length === 0) {
+        console.log('No listings found');
+        setListings([]);
+        return;
+      }
+
+      // Get unique seller IDs that don't have seller_name
+      const sellerIdsNeedingName = [...new Set(
+        listingsData
+          .filter(l => !l.seller_name && l.seller_id)
+          .map(l => l.seller_id)
+      )];
+
+      // Try to fetch seller names from profiles table if it exists
+      let sellerNameMap = {};
+      if (sellerIdsNeedingName.length > 0) {
+        try {
+          const { data: profiles } = await supabase
+            .from('profiles')
+            .select('id, name')
+            .in('id', sellerIdsNeedingName);
+          
+          if (profiles) {
+            profiles.forEach(profile => {
+              sellerNameMap[profile.id] = profile.name;
+            });
+          }
+        } catch (profilesError) {
+          // Profiles table doesn't exist or error, that's okay
+          console.log('Profiles table not available or error:', profilesError);
+        }
+
+        // For listings without seller_name, try to backfill from profiles or current user
+        const listingsToUpdate = listingsData.filter(l => 
+          !l.seller_name && 
+          l.seller_id && 
+          (sellerNameMap[l.seller_id] || l.seller_id === userProfile?.id)
+        );
+
+        if (listingsToUpdate.length > 0) {
+          // Update listings with seller_name
+          for (const listing of listingsToUpdate) {
+            const sellerName = sellerNameMap[listing.seller_id] || 
+                             (listing.seller_id === userProfile?.id ? userProfile?.name : null);
+            
+            if (sellerName) {
+              try {
+                await supabase
+                  .from('listings')
+                  .update({ seller_name: sellerName })
+                  .eq('id', listing.id);
+              } catch (updateError) {
+                console.log('Could not update seller_name:', updateError);
+              }
+            }
+          }
+        }
+      }
+
       // Transform data to match ListingCard props
-      const formattedListings = listingsData.map((l) => ({
-        id: l.id,
-        title: l.title,
-        category: l.category,
-        description: l.description,
-        price: l.price,
-        address: l.address,
-        images: l.listing_images.map((img) => img.image_url),
-        seller: userProfile?.name || 'Unknown', // optional, you can fetch actual seller
-        categoryClass: l.category.toLowerCase(),
-      }));
+      const formattedListings = listingsData.map((l) => {
+        // Determine seller name: use stored, or from map, or current user if match, or Unknown
+        let sellerName = l.seller_name;
+        if (!sellerName && l.seller_id) {
+          sellerName = sellerNameMap[l.seller_id] || 
+                      (l.seller_id === userProfile?.id ? userProfile?.name : null) ||
+                      'Unknown';
+        } else if (!sellerName) {
+          sellerName = 'Unknown';
+        }
 
+        return {
+          id: l.id,
+          title: l.title || 'Untitled',
+          category: l.category || 'Uncategorized',
+          description: l.description || '',
+          price: l.price || 0,
+          address: l.address || '',
+          images: (l.listing_images && Array.isArray(l.listing_images) && l.listing_images.length > 0)
+            ? l.listing_images.map((img) => img.image_url).filter(Boolean)
+            : [],
+          seller: sellerName,
+          categoryClass: (l.category || 'uncategorized').toLowerCase(),
+        };
+      });
+
+      console.log('Formatted listings:', formattedListings);
       setListings(formattedListings);
+    } catch (err) {
+      console.error('Unexpected error fetching listings:', err);
     }
   };
 
   const handleAddListing = async (newListing) => {
+    // Prepare insert data
+    const insertData = {
+      seller_id: userProfile?.id,
+      title: newListing.title,
+      category: newListing.category,
+      description: newListing.description,
+      price: newListing.price,
+      address: newListing.address,
+    };
+
+    // Try to include seller_name (will fail gracefully if column doesn't exist)
+    const sellerName = userProfile?.name || newListing.seller || 'Unknown';
+    insertData.seller_name = sellerName;
+
     // Insert into listings table
-    const { data: insertedListing, error } = await supabase
+    let { data: insertedListing, error } = await supabase
       .from('listings')
-      .insert({
-        seller_id: userProfile?.id,
-        title: newListing.title,
-        category: newListing.category,
-        description: newListing.description,
-        price: newListing.price,
-        address: newListing.address,
-      })
+      .insert(insertData)
       .select()
       .single();
+
+    // If seller_name column doesn't exist, try without it
+    if (error && error.message && error.message.includes('seller_name')) {
+      console.warn('seller_name column not found, inserting without it');
+      delete insertData.seller_name;
+      const retryResult = await supabase
+        .from('listings')
+        .insert(insertData)
+        .select()
+        .single();
+      
+      if (retryResult.error) {
+        console.error('Error adding listing:', retryResult.error);
+        return;
+      }
+      insertedListing = retryResult.data;
+      error = null;
+    }
 
     if (error) {
       console.error('Error adding listing:', error);
@@ -73,9 +191,17 @@ function HomeScreen() {
     }
 
     // Insert images
-    if (newListing.images.length > 0) {
-      const imagesToInsert = newListing.images.map((url) => ({
-        listing_id: insertedListing.id,
+    await handleImages(insertedListing.id, newListing.images);
+
+    // Refresh listings
+    fetchListings();
+    setShowAddDialog(false);
+  };
+
+  const handleImages = async (listingId, images) => {
+    if (images && images.length > 0) {
+      const imagesToInsert = images.map((url) => ({
+        listing_id: listingId,
         image_url: url, // if you upload files, replace with file URL
       }));
 
@@ -83,12 +209,12 @@ function HomeScreen() {
         .from('listing_images')
         .insert(imagesToInsert);
 
-      if (imagesError) console.error('Error adding images:', imagesError);
+      if (imagesError) {
+        console.error('Error adding images:', imagesError);
+        return { error: imagesError };
+      }
     }
-
-    // Refresh listings
-    fetchListings();
-    setShowAddDialog(false);
+    return { error: null };
   };
 
   if (loading) {
@@ -116,11 +242,11 @@ function HomeScreen() {
           </button>
         </div>
 
-        <div className="listings-container">
+      <div className="listings-container">
           {listings.map((item) => (
             <ListingCard key={item.id} {...item} />
-          ))}
-        </div>
+        ))}
+      </div>
 
         {showAddDialog && (
           <AddListingDialog
@@ -130,11 +256,11 @@ function HomeScreen() {
         )}
 
         {showProfile && userProfile && (
-          <ProfileDropdown
-            profile={userProfile}
-            onClose={() => setShowProfile(false)}
-          />
-        )}
+        <ProfileDropdown
+          profile={userProfile}
+          onClose={() => setShowProfile(false)}
+        />
+      )}
       </div>
     </div>
   );
