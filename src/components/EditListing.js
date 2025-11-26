@@ -117,27 +117,8 @@ function EditListing({ listing, onClose, onUpdate, onDelete }) {
 
   setSaving(true);
 
-  const fetchListingImages = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('listing_images')
-        .select('image_url')
-        .eq('listing_id', listing.id);
-
-      if (error) {
-        console.error('Failed to fetch images:', error);
-        return;
-      }
-
-      setExistingImages(data.map(img => img.image_url));
-      setImagesToDelete([]);
-      setSelectedImageIndex(0); // reset main image selection
-    } catch (err) {
-      console.error('Unexpected error fetching images:', err);
-    }
-  };
-
   try {
+    // Update listing details
     const { error: updateError } = await supabase
       .from('listings')
       .update({
@@ -155,36 +136,38 @@ function EditListing({ listing, onClose, onUpdate, onDelete }) {
       return; 
     }
 
-    if (imagesToDelete.length > 0) {
-      const { error: bulkDeleteError } = await supabase
+    // If any images were deleted or added, rebuild the images
+    if (imagesToDelete.length > 0 || newImages.length > 0) {
+      // Delete ALL existing images for this listing from database
+      const { error: deleteAllError } = await supabase
         .from('listing_images')
         .delete()
-        .eq('listing_id', listing.id)
-        .in('image_url', imagesToDelete);
+        .eq('listing_id', listing.id);
 
-      if (bulkDeleteError) {
-        console.error('Error deleting images:', bulkDeleteError);
-        showError('Some images could not be deleted.');
-        await fetchListingImages(); 
-        return; 
+      if (deleteAllError) {
+        console.error('Error deleting images:', deleteAllError);
+        showError('Failed to update images. Please try again.');
+        return;
       }
-    }
 
-    if (newImages.length > 0) {
-      const imagesToInsert = newImages.map(url => ({
-        listing_id: listing.id,
-        image_url: url,
-      }));
+      // Re-insert the remaining existing images + new images
+      const allImagesToInsert = [...existingImages, ...newImages];
+      
+      if (allImagesToInsert.length > 0) {
+        const imagesToInsert = allImagesToInsert.map(url => ({
+          listing_id: listing.id,
+          image_url: url,
+        }));
 
-      const { error: imagesError } = await supabase
-        .from('listing_images')
-        .insert(imagesToInsert);
+        const { error: imagesError } = await supabase
+          .from('listing_images')
+          .insert(imagesToInsert);
 
-      if (imagesError) {
-        console.error('Error adding new images:', imagesError);
-        showError('Some new images could not be added.');
-        await fetchListingImages();
-        return; 
+        if (imagesError) {
+          console.error('Error adding images:', imagesError);
+          showError('Failed to save images. Please try again.');
+          return;
+        }
       }
     }
     
