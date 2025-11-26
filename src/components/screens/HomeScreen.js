@@ -19,6 +19,7 @@ function HomeScreen() {
   useEffect(() => {
     if (!loading && !user) navigate('/');
     if (user) fetchListings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading]);
 
   const fetchListings = async () => {
@@ -55,6 +56,7 @@ function HomeScreen() {
         description: l.description || '',
         price: l.price || 0,
         address: l.address || '',
+        seller_id: l.seller_id, // Include seller_id for conversation creation
         images: l.listing_images?.map(img => img.image_url).filter(Boolean) || [],
         seller: l.seller_name || 'Unknown',
         categoryClass: (l.category || 'uncategorized').toLowerCase(),

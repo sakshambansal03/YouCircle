@@ -1,15 +1,115 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './OpenListing.css';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../supabaseClient';
 
 function OpenListing({ listing, onClose }) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [message, setMessage] = useState('Hello, is this still available?');
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [sending, setSending] = useState(false);
 
-  const handleMessageSubmit = (e) => {
+  const handleMessageSubmit = async (e) => {
     e.preventDefault();
-    if (message.trim()) {
-      alert('Message sent to ' + listing.seller + ': ' + message);
+    if (!message.trim() || sending || !user || !listing.id) return;
+
+    setSending(true);
+    try {
+      // Get seller_id from listing - we need to fetch it if not available
+      let sellerId = listing.seller_id;
+      
+      if (!sellerId && listing.id) {
+        const { data: listingData } = await supabase
+          .from('listings')
+          .select('seller_id')
+          .eq('id', listing.id)
+          .single();
+        
+        sellerId = listingData?.seller_id;
+      }
+
+      if (!sellerId) {
+        alert('Unable to find seller information. Please try again.');
+        setSending(false);
+        return;
+      }
+
+      // Prevent users from messaging themselves
+      if (sellerId === user.id) {
+        alert('You cannot message yourself about your own listing.');
+        setSending(false);
+        return;
+      }
+
+      // Check if conversation already exists
+      let conversationId = null;
+      
+      const { data: existingConv } = await supabase
+        .from('conversations')
+        .select('id')
+        .eq('listing_id', listing.id)
+        .eq('buyer_id', user.id)
+        .single();
+
+      if (existingConv) {
+        conversationId = existingConv.id;
+      } else {
+        // Create new conversation
+
+        const { data: newConv, error: convError } = await supabase
+          .from('conversations')
+          .insert({
+            listing_id: listing.id,
+            seller_id: sellerId,
+            buyer_id: user.id,
+          })
+          .select()
+          .single();
+
+        if (convError) {
+          console.error('Error creating conversation:', convError);
+          alert('Failed to create conversation. Please try again.');
+          setSending(false);
+          return;
+        }
+
+        conversationId = newConv.id;
+      }
+
+      // Send the message
+      const { error: messageError } = await supabase
+        .from('messages')
+        .insert({
+          conversation_id: conversationId,
+          sender_id: user.id,
+          content: message.trim(),
+          is_read: false,
+        });
+
+      if (messageError) {
+        console.error('Error sending message:', messageError);
+        alert('Failed to send message. Please try again.');
+        setSending(false);
+        return;
+      }
+
+      // Update conversation's updated_at
+      await supabase
+        .from('conversations')
+        .update({ updated_at: new Date().toISOString() })
+        .eq('id', conversationId);
+
+      // Close modal and navigate to messages with conversation ID
       setMessage('Hello, is this still available?');
+      onClose();
+      navigate(`/messages?conversation=${conversationId}`);
+    } catch (err) {
+      console.error('Error sending message:', err);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setSending(false);
     }
   };
 
@@ -37,37 +137,37 @@ function OpenListing({ listing, onClose }) {
                 {images.length > 1 && (
                   <div className="thumbnail-container">
                     {images.map((img, idx) => (
-                      <img
-                        key={idx}
-                        src={img}
-                        alt={`${listing.title} ${idx + 1}`}
+              <img
+                key={idx}
+                src={img}
+                alt={`${listing.title} ${idx + 1}`}
                         className={`thumbnail ${selectedImageIndex === idx ? 'active' : ''}`}
                         onClick={() => setSelectedImageIndex(idx)}
-                      />
+              />
                     ))}
                   </div>
                 )}
               </>
-            ) : (
+          ) : (
               <div className="no-image-placeholder">
                 <i className="fa fa-image"></i>
                 <p>No images available</p>
               </div>
-            )}
-          </div>
+          )}
+        </div>
 
           <div className="open-listing-info-section">
-            <div className="open-listing-details">
+        <div className="open-listing-details">
               <div className="listing-header">
-                <h2 className="open-listing-title">{listing.title}</h2>
-                <p className="open-listing-price">${listing.price}</p>
+          <h2 className="open-listing-title">{listing.title}</h2>
+          <p className="open-listing-price">${listing.price}</p>
               </div>
               
               {listing.category && (
                 <span className="listing-category-badge">{listing.category}</span>
               )}
               
-              <p className="open-listing-description">{listing.description}</p>
+          <p className="open-listing-description">{listing.description}</p>
               
               <div className="seller-info">
                 <div className="seller-item">
@@ -81,24 +181,30 @@ function OpenListing({ listing, onClose }) {
                   </div>
                 )}
               </div>
-            </div>
+        </div>
 
             <div className="open-listing-message">
               <h3>
                 <i className="fa fa-comment"></i> Send seller a message
               </h3>
               <form onSubmit={handleMessageSubmit}>
-                <textarea
+            <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Hello, is this still available?"
                   className="message-textarea"
-                  rows="4"
-                ></textarea>
-                <button type="submit" className="send-message-btn">
-                  Send
-                </button>
-              </form>
+              rows="4"
+            ></textarea>
+                <button type="submit" className="send-message-btn" disabled={sending}>
+                  {sending ? (
+                    <>
+                      <i className="fa fa-spinner fa-spin"></i> Sending...
+                    </>
+                  ) : (
+                    'Send'
+                  )}
+            </button>
+          </form>
             </div>
           </div>
         </div>

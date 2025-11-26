@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './screens/HomeScreen.css'
 import OpenListing from './OpenListing.js';
 
-function ListingCard({ id, title, category, description, seller, address, price, categoryClass, images = [] }) {
+function ListingCard({ id, title, category, description, seller, address, price, categoryClass, images = [], seller_id }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -31,7 +31,7 @@ function ListingCard({ id, title, category, description, seller, address, price,
       {open && (
         <OpenListing
           onClose={() => setOpen(false)}
-          listing={{ id, title, category, description, seller, address, price, images }}
+          listing={{ id, title, category, description, seller, address, price, images, seller_id }}
         />
       )}
     </>

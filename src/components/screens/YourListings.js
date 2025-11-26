@@ -15,6 +15,7 @@ function YourListings() {
   useEffect(() => {
     if (!loading && !user) navigate('/'); // redirect if not logged in
     if (user) fetchYourListings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading]);
 
   const fetchYourListings = async () => {
@@ -47,8 +48,9 @@ function YourListings() {
         description: l.description || '',
         price: l.price || 0,
         address: l.address || '',
+        seller_id: userProfile?.id, // Include seller_id
         images: l.listing_images?.map(img => img.image_url).filter(Boolean) || [],
-        seller: l.seller_name || 'Unknown',   // ← FIXED
+        seller: l.seller_name || 'Unknown',
         categoryClass: (l.category || 'uncategorized').toLowerCase(),
       }));
 
