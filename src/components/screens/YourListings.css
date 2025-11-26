@@ -1,6 +1,27 @@
 .listings-screen {
-    font-family: Arial, sans-serif;
-    background-color: #f0f2f5;
-    min-height: calc(100vh - 50px);
-    padding-bottom: 10px
+  font-family: Arial, sans-serif;
+  background-color: #f0f2f5;
+  min-height: calc(100vh - 50px);
+  padding-bottom: 20px;
+}
+
+.listings-content {
+  margin-left: 250px;
+  margin-top: 60px;
+  padding-left: 30px;
+  padding-top: 30px;
+}
+
+.listings-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 40px 40px 20px 40px;
+}
+
+.listings-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  padding: 0 40px;
 }

@@ -243,9 +243,13 @@ function HomeScreen() {
         </div>
 
       <div className="listings-container">
-          {listings.map((item) => (
-            <ListingCard key={item.id} {...item} />
-        ))}
+        {listings.length === 0 ? (
+          <p>
+            There are no listings yet.
+          </p>
+        ) : (
+          listings.map((item) => <ListingCard key={item.id} {...item} />)
+        )}
       </div>
 
         {showAddDialog && (
