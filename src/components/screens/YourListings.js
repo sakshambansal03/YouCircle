@@ -60,6 +60,14 @@ function YourListings() {
     }
   };
 
+  const handleListingUpdate = () => {
+    fetchYourListings();
+  };
+
+  const handleListingDelete = () => {
+    fetchYourListings();
+  };
+
   if (loading) {
     return (
       <div className="listings-screen">
@@ -82,7 +90,13 @@ function YourListings() {
         ) : (
           <div className="listings-container">
             {listings.map((item) => (
-              <ListingCard key={item.id} {...item} />
+              <ListingCard
+                key={item.id}
+                {...item}
+                editable={true}
+                onUpdate={handleListingUpdate}
+                onDelete={handleListingDelete}
+              />
             ))}
           </div>
         )}

@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import './screens/HomeScreen.css'
 import OpenListing from './OpenListing.js';
+import EditListing from './EditListing.js';
 
-function ListingCard({ id, title, category, description, seller, address, price, categoryClass, images = [], seller_id }) {
+function ListingCard({ id, title, category, description, seller, address, price, categoryClass, images = [], seller_id, editable = false, onUpdate, onDelete }) {
   const [open, setOpen] = useState(false);
+
+  const listing = { id, title, category, description, seller, address, price, images, seller_id };
 
   return (
     <>
@@ -28,10 +31,25 @@ function ListingCard({ id, title, category, description, seller, address, price,
         </div>
       </div>
 
-      {open && (
+      {open && !editable && (
         <OpenListing
           onClose={() => setOpen(false)}
-          listing={{ id, title, category, description, seller, address, price, images, seller_id }}
+          listing={listing}
+        />
+      )}
+
+      {open && editable && (
+        <EditListing
+          onClose={() => setOpen(false)}
+          listing={listing}
+          onUpdate={() => {
+            setOpen(false);
+            if (onUpdate) onUpdate();
+          }}
+          onDelete={() => {
+            setOpen(false);
+            if (onDelete) onDelete();
+          }}
         />
       )}
     </>
