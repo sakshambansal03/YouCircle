@@ -55,6 +55,8 @@ function MessagesScreen() {
           listing_id,
           seller_id,
           buyer_id,
+          buyer_name,
+          seller_name,
           created_at,
           updated_at,
           listings (
@@ -84,8 +86,8 @@ function MessagesScreen() {
 
       const otherUserId = data.seller_id === user.id ? data.buyer_id : data.seller_id;
       const otherUserName = data.seller_id === user.id 
-        ? 'Buyer'
-        : data.listings?.seller_name || 'Unknown';
+        ? (data.buyer_name || 'Buyer') // User is seller, show buyer name
+        : (data.seller_name || data.listings?.seller_name || 'Unknown'); // User is buyer, show seller name
 
       const conversation = {
         ...data,
@@ -117,6 +119,8 @@ function MessagesScreen() {
           listing_id,
           seller_id,
           buyer_id,
+          buyer_name,
+          seller_name,
           created_at,
           updated_at,
           listings (
@@ -149,8 +153,8 @@ function MessagesScreen() {
           // Get the other participant's name
           const otherUserId = conv.seller_id === user.id ? conv.buyer_id : conv.seller_id;
           const otherUserName = conv.seller_id === user.id 
-            ? 'Buyer' // We'll need to fetch this from profiles or auth
-            : conv.listings?.seller_name || 'Unknown';
+            ? (conv.buyer_name || 'Buyer') // User is seller, show buyer name
+            : (conv.seller_name || conv.listings?.seller_name || 'Unknown'); // User is buyer, show seller name
 
           return {
             ...conv,
@@ -264,7 +268,7 @@ function MessagesScreen() {
                         )}
                       </div>
                       <p className="conversation-participant">
-                        {conv.seller_id === user.id ? 'Buyer' : conv.otherUserName}
+                        {conv.otherUserName}
                       </p>
                       {conv.lastMessage && (
                         <p className="conversation-preview">

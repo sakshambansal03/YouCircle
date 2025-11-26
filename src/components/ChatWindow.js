@@ -134,8 +134,8 @@ function ChatWindow({ conversation, currentUser, onClose }) {
   };
 
   const otherUserName = conversation.seller_id === currentUser.id 
-    ? 'Buyer' 
-    : conversation.otherUserName || listing?.seller_name || 'Unknown';
+    ? (conversation.buyer_name || 'Buyer') // User is seller, show buyer name
+    : (conversation.seller_name || conversation.otherUserName || listing?.seller_name || 'Unknown'); // User is buyer, show seller name
 
   return (
     <div className="chat-window">
