@@ -195,6 +195,18 @@ function OpenListing({ listing, onClose }) {
                     <span><strong>Location:</strong> {listing.address}</span>
                   </div>
                 )}
+                {listing.created_at && (
+                  <div className="seller-item">
+                    <i className="fa fa-calendar"></i>
+                    <span>
+                      <strong>Posted:</strong> {new Date(listing.created_at + 'Z').toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}
+                    </span>
+                  </div>
+                )}
               </div>
         </div>
 

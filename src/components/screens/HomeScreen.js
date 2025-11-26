@@ -60,6 +60,7 @@ function HomeScreen() {
         images: l.listing_images?.map(img => img.image_url).filter(Boolean) || [],
         seller: l.seller_name || 'Unknown',
         categoryClass: (l.category || 'uncategorized').toLowerCase(),
+        created_at: l.created_at,
       }));
 
       setListings(formattedListings);

@@ -43,26 +43,6 @@
     transform: translateY(-4px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   }
-
-  .listing-edit-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
-    z-index: 2;
-  }
-
-  .listing-edit-badge i {
-    font-size: 14px;
-  }
   
   .listing-image-placeholder {
     background-color: #e0e0e0;
@@ -84,11 +64,21 @@
     flex-direction: column;
   }
   
+  .listing-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    margin-top: 20px;
+  }
+
   .listing-title {
     font-size: 20px;
     font-weight: bold;
     color: #333;
-    margin-bottom: 10px;
+    margin: 0;
+    flex: 1;
   }
   
   .listing-category {
@@ -167,6 +157,14 @@
     font-size: 22px;
     font-weight: bold;
     color: #3498db;
+  }
+
+  .listing-time-ago {
+    font-size: 11px;
+    color: #999;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 5px;
   }
   
   /* Responsive adjustments */
