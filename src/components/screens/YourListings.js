@@ -18,29 +18,43 @@ function YourListings() {
   }, [user, loading]);
 
   const fetchYourListings = async () => {
-    const { data: listingsData, error } = await supabase
-      .from('listings')
-      .select(`id, title, category, description, price, address, seller_id, created_at,
-               listing_images (image_url)`)
-      .eq('seller_id', userProfile?.id)
-      .order('created_at', { ascending: false });
+    try {
+      const { data: listingsData, error } = await supabase
+        .from('listings')
+        .select(`
+          id,
+          title,
+          category,
+          description,
+          price,
+          address,
+          seller_name,
+          listing_images (image_url),
+          created_at
+        `)
+        .eq('seller_id', userProfile?.id)
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching your listings:', error);
-    } else {
+      if (error) {
+        console.error('Error fetching your listings:', error);
+        return;
+      }
+
       const formattedListings = listingsData.map((l) => ({
         id: l.id,
-        title: l.title,
-        category: l.category,
-        description: l.description,
-        price: l.price,
-        address: l.address,
-        images: l.listing_images.map((img) => img.image_url),
-        seller: userProfile?.name || 'Unknown',
-        categoryClass: l.category.toLowerCase(),
+        title: l.title || 'Untitled',
+        category: l.category || 'Uncategorized',
+        description: l.description || '',
+        price: l.price || 0,
+        address: l.address || '',
+        images: l.listing_images?.map(img => img.image_url).filter(Boolean) || [],
+        seller: l.seller_name || 'Unknown',   // ← FIXED
+        categoryClass: (l.category || 'uncategorized').toLowerCase(),
       }));
 
       setListings(formattedListings);
+    } catch (err) {
+      console.error('Unexpected error fetching your listings:', err);
     }
   };
 
@@ -60,7 +74,9 @@ function YourListings() {
       <div className="listings-content">
         <h2 className="listings-title">Your Listings</h2>
         {listings.length === 0 ? (
-          <p style={{ marginLeft: '40px', marginTop: '30px' }}>You haven't posted any listings yet.</p>
+          <p style={{ marginLeft: '40px', marginTop: '30px' }}>
+            You haven't posted any listings yet.
+          </p>
         ) : (
           <div className="listings-container">
             {listings.map((item) => (
@@ -74,4 +90,3 @@ function YourListings() {
 }
 
 export default YourListings;
-
