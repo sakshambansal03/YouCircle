@@ -16,6 +16,7 @@ function HomeScreen() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [listings, setListings] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All Categories');
 
   useEffect(() => {
     if (!loading && !user) navigate('/');
@@ -125,8 +126,14 @@ function HomeScreen() {
 
   if (!user) return null;
 
-  // Filter listings based on search query
+  // Filter listings based on search query and category
   const filteredListings = listings.filter(listing => {
+    // Filter by category
+    if (selectedCategory !== 'All Categories' && listing.category !== selectedCategory) {
+      return false;
+    }
+    
+    // Filter by search query
     if (!searchQuery.trim()) return true;
     const query = searchQuery.toLowerCase();
     return (
@@ -146,14 +153,33 @@ function HomeScreen() {
       <div className="home-content">
         <div className="recent-listings-header">
           <h2 className="recent-listings-title">Recent Listings</h2>
-          <button className="add-listing-btn" onClick={() => setShowAddDialog(true)}>
-            + Add New Listing
-          </button>
+          <div className="header-actions">
+            <select 
+              className="category-filter-dropdown"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="All Categories">All Categories</option>
+              <option value="Services">Services</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Study Material">Study Material</option>
+              <option value="Clothing and Accessories">Clothing and Accessories</option>
+              <option value="Miscellaneous">Miscellaneous</option>
+            </select>
+            <button className="add-listing-btn" onClick={() => setShowAddDialog(true)}>
+              + Add New Listing
+            </button>
+          </div>
         </div>
 
         <div className="listings-container">
           {filteredListings.length === 0 ? (
-            <p>{searchQuery ? 'No listings match your search.' : 'There are no listings yet.'}</p>
+            <p className="no-listings-message">
+              {searchQuery || selectedCategory !== 'All Categories' 
+                ? 'No listings match your filters.' 
+                : 'There are no listings yet.'}
+            </p>
           ) : (
             filteredListings.map(item => <ListingCard key={item.id} {...item} />)
           )}
