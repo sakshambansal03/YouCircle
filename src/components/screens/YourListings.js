@@ -11,6 +11,7 @@ function YourListings() {
   const { user, userProfile, loading } = useAuth();
   const navigate = useNavigate();
   const [listings, setListings] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (!loading && !user) navigate('/'); // redirect if not logged in
@@ -69,6 +70,19 @@ function YourListings() {
     fetchYourListings();
   };
 
+  // Filter listings based on search query
+  const filteredListings = listings.filter(listing => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      listing.title?.toLowerCase().includes(query) ||
+      listing.description?.toLowerCase().includes(query) ||
+      listing.category?.toLowerCase().includes(query) ||
+      listing.seller?.toLowerCase().includes(query) ||
+      listing.address?.toLowerCase().includes(query)
+    );
+  });
+
   if (loading) {
     return (
       <div className="listings-screen">
@@ -79,18 +93,18 @@ function YourListings() {
 
   return (
     <div className="listings-screen">
-      <Header />
+      <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <SideDrawer />
 
       <div className="listings-content">
         <h2 className="listings-title">Your Listings</h2>
-        {listings.length === 0 ? (
+        {filteredListings.length === 0 ? (
           <p style={{ marginLeft: '40px', marginTop: '30px' }}>
-            You haven't posted any listings yet.
+            {searchQuery ? 'No listings match your search.' : 'You haven\'t posted any listings yet.'}
           </p>
         ) : (
           <div className="listings-container">
-            {listings.map((item) => (
+            {filteredListings.map((item) => (
               <ListingCard
                 key={item.id}
                 {...item}
