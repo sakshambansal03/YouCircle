@@ -1,15 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './OpenListing.css';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../supabaseClient';
+import EditListing from './EditListing';
 
-function OpenListing({ listing, onClose }) {
+function OpenListing({ listing, onClose, onUpdate }) {
   const { user, userProfile } = useAuth();
   const navigate = useNavigate();
   const [message, setMessage] = useState('Hello, is this still available?');
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [sending, setSending] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+
+  useEffect(() => {
+    const checkOwnership = async () => {
+      if (!user || !listing.id) return;
+      
+      let sellerId = listing.seller_id;
+      
+      if (!sellerId) {
+        const { data: listingData } = await supabase
+          .from('listings')
+          .select('seller_id')
+          .eq('id', listing.id)
+          .single();
+        
+        sellerId = listingData?.seller_id;
+      }
+      
+      setIsOwner(sellerId === user.id);
+    };
+    
+    checkOwnership();
+  }, [user, listing.id, listing.seller_id]);
 
   const handleMessageSubmit = async (e) => {
     e.preventDefault();
@@ -131,6 +156,27 @@ function OpenListing({ listing, onClose }) {
   const images = listing.images && listing.images.length > 0 ? listing.images : [];
   const mainImage = images[selectedImageIndex] || null;
 
+  if (showEdit) {
+    return (
+      <EditListing
+        listing={listing}
+        onClose={() => {
+          setShowEdit(false);
+        }}
+        onUpdate={() => {
+          if (onUpdate) onUpdate();
+          setShowEdit(false);
+          onClose();
+        }}
+        onDelete={() => {
+          if (onUpdate) onUpdate();
+          setShowEdit(false);
+          onClose();
+        }}
+      />
+    );
+  }
+
   return (
     <div className="open-listing-overlay" onClick={onClose}>
       <div className="open-listing-modal" onClick={(e) => e.stopPropagation()}>
@@ -210,29 +256,41 @@ function OpenListing({ listing, onClose }) {
               </div>
         </div>
 
-            <div className="open-listing-message">
-              <h3>
-                <i className="fa fa-comment"></i> Send seller a message
-              </h3>
-              <form onSubmit={handleMessageSubmit}>
-            <textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Hello, is this still available?"
-                  className="message-textarea"
-              rows="4"
-            ></textarea>
-                <button type="submit" className="send-message-btn" disabled={sending}>
-                  {sending ? (
-                    <>
-                      <i className="fa fa-spinner fa-spin"></i> Sending...
-                    </>
-                  ) : (
-                    'Send'
-                  )}
-            </button>
-          </form>
-            </div>
+            {isOwner ? (
+              <div className="open-listing-message">
+                <button 
+                  type="button" 
+                  className="send-message-btn" 
+                  onClick={() => setShowEdit(true)}
+                >
+                  Edit
+                </button>
+              </div>
+            ) : (
+              <div className="open-listing-message">
+                <h3>
+                  <i className="fa fa-comment"></i> Send seller a message
+                </h3>
+                <form onSubmit={handleMessageSubmit}>
+                  <textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Hello, is this still available?"
+                    className="message-textarea"
+                    rows="4"
+                  ></textarea>
+                  <button type="submit" className="send-message-btn" disabled={sending}>
+                    {sending ? (
+                      <>
+                        <i className="fa fa-spinner fa-spin"></i> Sending...
+                      </>
+                    ) : (
+                      'Send'
+                    )}
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
         </div>
       </div>
