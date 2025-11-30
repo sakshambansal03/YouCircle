@@ -15,6 +15,7 @@ function HomeScreen() {
   const [showProfile, setShowProfile] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [listings, setListings] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (!loading && !user) navigate('/');
@@ -124,9 +125,22 @@ function HomeScreen() {
 
   if (!user) return null;
 
+  // Filter listings based on search query
+  const filteredListings = listings.filter(listing => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      listing.title?.toLowerCase().includes(query) ||
+      listing.description?.toLowerCase().includes(query) ||
+      listing.category?.toLowerCase().includes(query) ||
+      listing.seller?.toLowerCase().includes(query) ||
+      listing.address?.toLowerCase().includes(query)
+    );
+  });
+
   return (
     <div className="home-screen">
-      <Header />
+      <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <SideDrawer />
 
       <div className="home-content">
@@ -138,10 +152,10 @@ function HomeScreen() {
         </div>
 
         <div className="listings-container">
-          {listings.length === 0 ? (
-            <p>There are no listings yet.</p>
+          {filteredListings.length === 0 ? (
+            <p>{searchQuery ? 'No listings match your search.' : 'There are no listings yet.'}</p>
           ) : (
-            listings.map(item => <ListingCard key={item.id} {...item} />)
+            filteredListings.map(item => <ListingCard key={item.id} {...item} />)
           )}
         </div>
 

@@ -3,7 +3,7 @@ import "./Header.css";
 import { useAuth } from "../contexts/AuthContext";
 import ProfileDropdown from "./ProfileDropdown";
 
-export default function Header() {
+export default function Header({ searchQuery = '', onSearchChange }) {
   const { userProfile } = useAuth();
   const [showProfile, setShowProfile] = useState(false);
 
@@ -26,6 +26,8 @@ export default function Header() {
         <input
           type="text"
           placeholder="Search for services, items, or tutors..."
+          value={searchQuery}
+          onChange={(e) => onSearchChange?.(e.target.value)}
         />
       </div>
 
