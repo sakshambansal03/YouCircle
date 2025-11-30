@@ -1,14 +1,14 @@
 .messages-screen {
-  min-height: 100vh;
+  height: 85vh;
   background-color: #f0f2f5;
   padding-bottom: 50px;
 }
 
 .messages-content {
   display: flex;
-  height: calc(100vh - 80px);
-  margin-top: 80px;
-  margin-left: 230px;
+  min-height: calc(100vh - 70px);
+  margin-top: 90px;
+  margin-left: 260px;
   gap: 0;
 }
 
