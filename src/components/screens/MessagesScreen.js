@@ -100,16 +100,18 @@ function MessagesScreen() {
       setSelectedConversation(conversation);
       navigate('/messages', { replace: true });
       
-      // Refresh conversations list to include this one
-      fetchConversations();
+      // Refresh conversations list to include this one (silently)
+      fetchConversations(false);
     } catch (err) {
       console.error('Error fetching conversation:', err);
     }
   };
 
-  const fetchConversations = async () => {
+  const fetchConversations = async (showLoading = true) => {
     try {
-      setLoadingConversations(true);
+      if (showLoading) {
+        setLoadingConversations(true);
+      }
       
       // Fetch conversations where user is either buyer or seller
       const { data, error } = await supabase
@@ -167,10 +169,20 @@ function MessagesScreen() {
       );
 
       setConversations(conversationsWithMessages);
+      
+      // Update selected conversation if it exists to reflect latest data
+      if (selectedConversation) {
+        const updatedConv = conversationsWithMessages.find(c => c.id === selectedConversation.id);
+        if (updatedConv) {
+          setSelectedConversation(updatedConv);
+        }
+      }
     } catch (err) {
       console.error('Error fetching conversations:', err);
     } finally {
-      setLoadingConversations(false);
+      if (showLoading) {
+        setLoadingConversations(false);
+      }
     }
   };
 
@@ -188,7 +200,8 @@ function MessagesScreen() {
           filter: `seller_id=eq.${user.id}`,
         },
         () => {
-          fetchConversations();
+          // Silently refresh conversations without showing loading screen
+          fetchConversations(false);
         }
       )
       .on(
@@ -200,7 +213,8 @@ function MessagesScreen() {
           filter: `buyer_id=eq.${user.id}`,
         },
         () => {
-          fetchConversations();
+          // Silently refresh conversations without showing loading screen
+          fetchConversations(false);
         }
       )
       .subscribe();
