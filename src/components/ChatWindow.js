@@ -133,7 +133,8 @@ function ChatWindow({ conversation, currentUser, onClose, onMessageSent }) {
         .eq('id', conversation.id);
 
       setNewMessage('');
-      setMessages((prev) => [...prev, data]);
+      // Don't manually add message to state - let the subscription handle it
+      // This prevents duplicate messages from race conditions
       
       // Trigger silent refresh of conversations list
       if (onMessageSent) {
