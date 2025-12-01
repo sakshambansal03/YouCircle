@@ -257,28 +257,22 @@ function MessagesScreen() {
     };
   };
 
-  if (loading || loadingConversations) {
-    return (
-      <div className="messages-screen">
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) return null;
+  if (!user && !loading) return null;
 
   return (
     <div className="messages-screen">
-      <Header />
+      <Header hideSearch={true} />
       <SideDrawer unreadCount={totalUnreadCount} />
 
       <div className="messages-content">
         <div className="conversations-list">
           <h2 className="messages-title">Messages</h2>
           
-          {conversations.length === 0 ? (
+          {loadingConversations ? (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', padding: '40px' }}>
+              <p>Loading conversations...</p>
+            </div>
+          ) : conversations.length === 0 ? (
             <div className="no-conversations">
               <i className="fa fa-envelope-open"></i>
               <p>No messages yet</p>
@@ -336,7 +330,12 @@ function MessagesScreen() {
         </div>
 
         <div className="chat-area">
-          {selectedConversation ? (
+          {loadingConversations ? (
+            <div className="no-chat-selected">
+              <i className="fa fa-spinner fa-spin"></i>
+              <p>Loading...</p>
+            </div>
+          ) : selectedConversation ? (
             <ChatWindow
               conversation={selectedConversation}
               currentUser={user}

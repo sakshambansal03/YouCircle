@@ -3,7 +3,7 @@ import "./Header.css";
 import { useAuth } from "../contexts/AuthContext";
 import ProfileDropdown from "./ProfileDropdown";
 
-export default function Header({ searchQuery = '', onSearchChange }) {
+export default function Header({ searchQuery = '', onSearchChange, hideSearch = false }) {
   const { userProfile } = useAuth();
   const [showProfile, setShowProfile] = useState(false);
 
@@ -21,15 +21,17 @@ export default function Header({ searchQuery = '', onSearchChange }) {
     <header className="home-header">
       <div className="home-logo">YouCircle</div>
 
-      <div className="home-search-bar">
-        <i className="fa fa-search"></i>
-        <input
-          type="text"
-          placeholder="Search for services, items, or tutors..."
-          value={searchQuery}
-          onChange={(e) => onSearchChange?.(e.target.value)}
-        />
-      </div>
+      {!hideSearch && (
+        <div className="home-search-bar">
+          <i className="fa fa-search"></i>
+          <input
+            type="text"
+            placeholder="Search for services, items, or tutors..."
+            value={searchQuery}
+            onChange={(e) => onSearchChange?.(e.target.value)}
+          />
+        </div>
+      )}
 
       <div
         className="home-avatar"
