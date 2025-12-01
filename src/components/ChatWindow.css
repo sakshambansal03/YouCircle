@@ -214,8 +214,8 @@
   cursor: not-allowed;
 }
 
-.chat-send-btn i {
-  font-size: 16px;
+.submit-icon {
+  font-size: 18px;
 }
 
 /* Scrollbar styling */
@@ -235,4 +235,3 @@
 .chat-messages::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
-

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabaseClient';
 import './ChatWindow.css';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 
 function ChatWindow({ conversation, currentUser, onClose }) {
   const [messages, setMessages] = useState([]);
@@ -199,11 +201,7 @@ function ChatWindow({ conversation, currentUser, onClose }) {
           disabled={sending}
         />
         <button type="submit" className="chat-send-btn" disabled={sending || !newMessage.trim()}>
-          {sending ? (
-            <i className="fa fa-spinner fa-spin"></i>
-          ) : (
-            <i className="fa fa-paper-plane"></i>
-          )}
+          <FontAwesomeIcon icon={faPaperPlane} className="submit-icon" />
         </button>
       </form>
     </div>
