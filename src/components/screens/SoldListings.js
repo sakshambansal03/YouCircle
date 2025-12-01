@@ -1,27 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './YourListings.css';
+import './HomeScreen.css';
+import ListingCard from '../ListingCard';
 import Header from '../Header';
 import SideDrawer from '../SideDrawer';
-import ListingCard from '../ListingCard';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from "../../supabaseClient";
 
-function YourListings() {
+function SoldListings() {
   const { user, userProfile, loading } = useAuth();
   const navigate = useNavigate();
   const [listings, setListings] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    if (!loading && !user) navigate('/'); // redirect if not logged in
-    if (user) fetchYourListings();
+    if (!loading && !user) navigate('/');
+    if (user) fetchSoldListings();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading]);
 
-  const fetchYourListings = async () => {
+  const fetchSoldListings = async () => {
     try {
-      const { data: listingsData, error } = await supabase
+      const { data, error } = await supabase
         .from('listings')
         .select(`
           id,
@@ -33,44 +33,41 @@ function YourListings() {
           seller_name,
           listing_images (image_url),
           created_at,
-          ifsold
+          ifsold,
+          seller_id
         `)
-        .eq('seller_id', userProfile?.id)
-        .eq('ifsold', false)
+        .eq('ifsold', true)
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Error fetching your listings:', error);
+        console.error('Error fetching sold listings:', error);
         return;
       }
 
-      const formattedListings = listingsData.map((l) => ({
+      if (!data || data.length === 0) {
+        setListings([]);
+        return;
+      }
+
+      const formattedListings = data.map((l) => ({
         id: l.id,
         title: l.title || 'Untitled',
         category: l.category || 'Uncategorized',
         description: l.description || '',
         price: l.price || 0,
         address: l.address || '',
-        seller_id: userProfile?.id, // Include seller_id
+        seller_id: l.seller_id,
         images: l.listing_images?.map(img => img.image_url).filter(Boolean) || [],
         seller: l.seller_name || 'Unknown',
         categoryClass: (l.category || 'uncategorized').toLowerCase(),
         created_at: l.created_at,
-        ifsold: l.ifsold || false,
+        ifsold: l.ifsold,
       }));
 
       setListings(formattedListings);
     } catch (err) {
-      console.error('Unexpected error fetching your listings:', err);
+      console.error('Unexpected error fetching sold listings:', err);
     }
-  };
-
-  const handleListingUpdate = () => {
-    fetchYourListings();
-  };
-
-  const handleListingDelete = () => {
-    fetchYourListings();
   };
 
   // Filter listings based on search query
@@ -88,39 +85,47 @@ function YourListings() {
 
   if (loading) {
     return (
-      <div className="listings-screen">
-        <p style={{ textAlign: 'center', marginTop: '50px' }}>Loading...</p>
+      <div className="home-screen">
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <p>Loading...</p>
+        </div>
       </div>
     );
   }
 
+  if (!user) return null;
+
   return (
-    <div className="listings-screen">
+    <div className="home-screen">
       <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <SideDrawer />
 
-      <div className="listings-content">
-        <h2 className="listings-title">Your Listings</h2>
-        {filteredListings.length === 0 ? (
-          <p style={{ marginLeft: '40px', marginTop: '30px' }}>
-            {searchQuery ? 'No listings match your search.' : 'You haven\'t posted any listings yet.'}
-          </p>
-        ) : (
-          <div className="listings-container">
-            {filteredListings.map((item) => (
-              <ListingCard
-                key={item.id}
-                {...item}
-                editable={true}
-                onUpdate={handleListingUpdate}
-                onDelete={handleListingDelete}
+      <div className="home-content">
+        <div className="recent-listings-header">
+          <h2 className="recent-listings-title">Sold Listings</h2>
+        </div>
+
+        <div className="listings-container">
+          {filteredListings.length === 0 ? (
+            <p className="no-listings-message">
+              {searchQuery 
+                ? 'No sold listings match your search.' 
+                : 'There are no sold listings yet.'}
+            </p>
+          ) : (
+            filteredListings.map(item => (
+              <ListingCard 
+                key={item.id} 
+                {...item} 
+                onUpdate={fetchSoldListings}
               />
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
 }
 
-export default YourListings;
+export default SoldListings;
+

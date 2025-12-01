@@ -13,6 +13,8 @@ function OpenListing({ listing, onClose, onUpdate }) {
   const [sending, setSending] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [markingAsSold, setMarkingAsSold] = useState(false);
+  const [showSoldConfirm, setShowSoldConfirm] = useState(false);
 
   useEffect(() => {
     const checkOwnership = async () => {
@@ -35,6 +37,34 @@ function OpenListing({ listing, onClose, onUpdate }) {
     
     checkOwnership();
   }, [user, listing.id, listing.seller_id]);
+
+  const handleMarkAsSold = async () => {
+    if (markingAsSold || !listing.id) return;
+
+    setMarkingAsSold(true);
+    try {
+      // Update the listing to mark it as sold
+      const { error } = await supabase
+        .from('listings')
+        .update({ ifsold: true })
+        .eq('id', listing.id);
+
+      if (error) {
+        console.error('Error marking listing as sold:', error);
+        alert('Failed to mark listing as sold. Please try again.');
+        setMarkingAsSold(false);
+        return;
+      }
+
+      // Refresh listings and close modal
+      if (onUpdate) onUpdate();
+      onClose();
+    } catch (err) {
+      console.error('Error marking listing as sold:', err);
+      alert('An error occurred. Please try again.');
+      setMarkingAsSold(false);
+    }
+  };
 
   const handleMessageSubmit = async (e) => {
     e.preventDefault();
@@ -258,13 +288,29 @@ function OpenListing({ listing, onClose, onUpdate }) {
 
             {isOwner ? (
               <div className="open-listing-message">
-                <button 
-                  type="button" 
-                  className="send-message-btn" 
-                  onClick={() => setShowEdit(true)}
-                >
-                  Edit
-                </button>
+                <div className="owner-actions">
+                  <button 
+                    type="button" 
+                    className="send-message-btn edit-btn" 
+                    onClick={() => setShowEdit(true)}
+                  >
+                    Edit
+                  </button>
+                  <button 
+                    type="button" 
+                    className="send-message-btn mark-sold-btn" 
+                    onClick={() => setShowSoldConfirm(true)}
+                    disabled={markingAsSold}
+                  >
+                    {markingAsSold ? (
+                      <>
+                        <i className="fa fa-spinner fa-spin"></i> Marking as Sold...
+                      </>
+                    ) : (
+                      'Mark as Sold'
+                    )}
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="open-listing-message">
@@ -294,6 +340,37 @@ function OpenListing({ listing, onClose, onUpdate }) {
           </div>
         </div>
       </div>
+
+      {showSoldConfirm && (
+        <div className="sold-confirm-overlay" onClick={() => setShowSoldConfirm(false)}>
+          <div className="sold-confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Mark as Sold</h3>
+            <p>Are you sure you want to mark this listing as sold? The listing will be moved to your sold listings and will no longer appear in the main browse page.</p>
+            <div className="sold-confirm-actions">
+              <button
+                className="cancel-sold-btn"
+                onClick={() => setShowSoldConfirm(false)}
+                disabled={markingAsSold}
+              >
+                Cancel
+              </button>
+              <button
+                className="confirm-sold-btn"
+                onClick={handleMarkAsSold}
+                disabled={markingAsSold}
+              >
+                {markingAsSold ? (
+                  <>
+                    <i className="fa fa-spinner fa-spin"></i> Marking as Sold...
+                  </>
+                ) : (
+                  'Yes, Mark as Sold'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

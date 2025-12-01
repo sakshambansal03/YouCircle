@@ -36,9 +36,12 @@ function HomeScreen() {
           price,
           address,
           seller_name,
+          seller_id,
           listing_images (image_url),
-          created_at
+          created_at,
+          ifsold
         `)
+        .eq('ifsold', false)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -63,6 +66,7 @@ function HomeScreen() {
         seller: l.seller_name || 'Unknown',
         categoryClass: (l.category || 'uncategorized').toLowerCase(),
         created_at: l.created_at,
+        ifsold: l.ifsold || false,
       }));
 
       setListings(formattedListings);
@@ -181,7 +185,13 @@ function HomeScreen() {
                 : 'There are no listings yet.'}
             </p>
           ) : (
-            filteredListings.map(item => <ListingCard key={item.id} {...item} />)
+            filteredListings.map(item => (
+              <ListingCard 
+                key={item.id} 
+                {...item} 
+                onUpdate={fetchListings}
+              />
+            ))
           )}
         </div>
 

@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./SideDrawer.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBagShopping, faList, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { faBagShopping, faList, faEnvelope, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 
 export default function SideDrawer({ unreadCount = 0 }) {
   const navigate = useNavigate();
@@ -11,6 +11,7 @@ export default function SideDrawer({ unreadCount = 0 }) {
   const drawerItems = [
     { title: "Browse All", path: "/home", icon: faBagShopping },
     { title: "Your Listings", path: "/listings", icon: faList },
+    { title: "Sold Listings", path: "/sold", icon: faCheckCircle },
     { title: "Messages", path: "/messages", icon: faEnvelope, badge: unreadCount },
   ];
 

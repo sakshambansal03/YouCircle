@@ -343,3 +343,119 @@
     font-size: 1.5rem;
   }
   }
+
+.owner-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.edit-btn {
+  background: #3498db;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.edit-btn:hover {
+  background: #2980b9;
+  box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
+}
+
+.mark-sold-btn {
+  background: #27ae60;
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+}
+
+.mark-sold-btn:hover {
+  background: #229954;
+  box-shadow: 0 6px 16px rgba(39, 174, 96, 0.4);
+}
+
+.mark-sold-btn:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 8px rgba(149, 165, 166, 0.3);
+}
+
+.sold-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(4px);
+}
+
+.sold-confirm-modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.sold-confirm-modal h3 {
+  margin: 0 0 15px 0;
+  font-size: 24px;
+  color: #333;
+  font-weight: 600;
+}
+
+.sold-confirm-modal p {
+  margin: 0 0 25px 0;
+  font-size: 16px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.sold-confirm-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.cancel-sold-btn,
+.confirm-sold-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-sold-btn {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.cancel-sold-btn:hover {
+  background: #d0d0d0;
+}
+
+.cancel-sold-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.confirm-sold-btn {
+  background: #27ae60;
+  color: white;
+}
+
+.confirm-sold-btn:hover {
+  background: #229954;
+}
+
+.confirm-sold-btn:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+}

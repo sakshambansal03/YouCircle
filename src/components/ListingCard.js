@@ -3,10 +3,10 @@ import './screens/HomeScreen.css'
 import OpenListing from './OpenListing.js';
 import EditListing from './EditListing.js';
 
-function ListingCard({ id, title, category, description, seller, address, price, categoryClass, images = [], seller_id, created_at, editable = false, onUpdate, onDelete }) {
+function ListingCard({ id, title, category, description, seller, address, price, categoryClass, images = [], seller_id, created_at, ifsold = false, editable = false, onUpdate, onDelete }) {
   const [open, setOpen] = useState(false);
 
-  const listing = { id, title, category, description, seller, address, price, images, seller_id, created_at };
+  const listing = { id, title, category, description, seller, address, price, images, seller_id, created_at, sold: ifsold };
 
   // Calculate how many days ago the listing was posted
   const getTimeAgo = (dateString) => {
@@ -34,10 +34,15 @@ function ListingCard({ id, title, category, description, seller, address, price,
 
   return (
     <>
-      <div className="listing-card" onClick={() => setOpen(true)} role="button" tabIndex={0} onKeyPress={() => setOpen(true)}>
+      <div className={`listing-card ${ifsold ? 'sold-listing' : ''}`} onClick={() => setOpen(true)} role="button" tabIndex={0} onKeyPress={() => setOpen(true)}>
+        {ifsold && (
+          <div className="sold-badge">
+            <i className="fa fa-check-circle"></i> SOLD
+          </div>
+        )}
         <div className="listing-image-placeholder">
           {images && images.length > 0 ? (
-            <img src={images[0]} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img src={images[0]} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: ifsold ? 0.6 : 1 }} />
           ) : (
             'No image'
           )}
@@ -62,6 +67,10 @@ function ListingCard({ id, title, category, description, seller, address, price,
         <OpenListing
           onClose={() => setOpen(false)}
           listing={listing}
+          onUpdate={() => {
+            setOpen(false);
+            if (onUpdate) onUpdate();
+          }}
         />
       )}
 
