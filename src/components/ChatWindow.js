@@ -4,7 +4,7 @@ import './ChatWindow.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 
-function ChatWindow({ conversation, currentUser, onClose }) {
+function ChatWindow({ conversation, currentUser, onClose, onMessageSent }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
@@ -77,7 +77,14 @@ function ChatWindow({ conversation, currentUser, onClose }) {
           filter: `conversation_id=eq.${conversation.id}`,
         },
         (payload) => {
-          setMessages((prev) => [...prev, payload.new]);
+          // Check if message already exists to prevent duplicates
+          setMessages((prev) => {
+            const messageExists = prev.some(msg => msg.id === payload.new.id);
+            if (messageExists) {
+              return prev; // Message already in state, don't add again
+            }
+            return [...prev, payload.new];
+          });
           scrollToBottom();
           
           // Mark as read if it's not from current user
@@ -127,6 +134,11 @@ function ChatWindow({ conversation, currentUser, onClose }) {
 
       setNewMessage('');
       setMessages((prev) => [...prev, data]);
+      
+      // Trigger silent refresh of conversations list
+      if (onMessageSent) {
+        onMessageSent();
+      }
     } catch (err) {
       console.error('Error sending message:', err);
       alert('Failed to send message. Please try again.');

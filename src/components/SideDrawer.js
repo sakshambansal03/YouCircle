@@ -4,14 +4,14 @@ import "./SideDrawer.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBagShopping, faList, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
-export default function SideDrawer() {
+export default function SideDrawer({ unreadCount = 0 }) {
   const navigate = useNavigate();
   const location = useLocation(); 
 
   const drawerItems = [
     { title: "Browse All", path: "/home", icon: faBagShopping },
     { title: "Your Listings", path: "/listings", icon: faList },
-    { title: "Messages", path: "/messages", icon: faEnvelope },
+    { title: "Messages", path: "/messages", icon: faEnvelope, badge: unreadCount },
   ];
 
   return (
@@ -25,7 +25,10 @@ export default function SideDrawer() {
           onClick={() => navigate(item.path)}
         >
           <FontAwesomeIcon icon={item.icon} className="drawer-icon" />
-          {item.title}
+          <span className="drawer-item-text">{item.title}</span>
+          {item.badge > 0 && (
+            <span className="drawer-badge">{item.badge > 99 ? '99+' : item.badge}</span>
+          )}
         </div>
       ))}
     </div>
