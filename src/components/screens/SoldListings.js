@@ -36,6 +36,7 @@ function SoldListings() {
           ifsold,
           seller_id
         `)
+        .eq('seller_id', userProfile?.id)
         .eq('ifsold', true)
         .order('created_at', { ascending: false });
 

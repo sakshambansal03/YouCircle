@@ -289,27 +289,36 @@ function OpenListing({ listing, onClose, onUpdate }) {
             {isOwner ? (
               <div className="open-listing-message">
                 <div className="owner-actions">
-                  <button 
-                    type="button" 
-                    className="send-message-btn edit-btn" 
-                    onClick={() => setShowEdit(true)}
-                  >
-                    Edit
-                  </button>
-                  <button 
-                    type="button" 
-                    className="send-message-btn mark-sold-btn" 
-                    onClick={() => setShowSoldConfirm(true)}
-                    disabled={markingAsSold}
-                  >
-                    {markingAsSold ? (
-                      <>
-                        <i className="fa fa-spinner fa-spin"></i> Marking as Sold...
-                      </>
-                    ) : (
-                      'Mark as Sold'
-                    )}
-                  </button>
+                  {!(listing.sold || listing.ifsold) && (
+                    <button 
+                      type="button" 
+                      className="send-message-btn edit-btn" 
+                      onClick={() => setShowEdit(true)}
+                    >
+                      Edit
+                    </button>
+                  )}
+                  {!(listing.sold || listing.ifsold) && (
+                    <button 
+                      type="button" 
+                      className="send-message-btn mark-sold-btn" 
+                      onClick={() => setShowSoldConfirm(true)}
+                      disabled={markingAsSold}
+                    >
+                      {markingAsSold ? (
+                        <>
+                          <i className="fa fa-spinner fa-spin"></i> Marking as Sold...
+                        </>
+                      ) : (
+                        'Mark as Sold'
+                      )}
+                    </button>
+                  )}
+                  {(listing.sold || listing.ifsold) && (
+                    <div className="sold-message">
+                      <i className="fa fa-check-circle"></i> This listing has been marked as sold.
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
