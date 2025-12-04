@@ -2,7 +2,7 @@
 
 The backend of YouCircle is built entirely on **Supabase**, which provides authentication, database management, storage, and real-time communication without requiring a custom server. All application data flows through Supabase’s automatically generated **API endpoints**, allowing the frontend to securely perform CRUD operations such as creating listings, fetching messages, updating profiles, and inserting conversation records. These endpoints are accessed through the Supabase client library, which handles authorization, session management, and row-level security enforcement. This architecture enables our React frontend to communicate seamlessly with the database while ensuring that only authenticated **.umass.edu** users can read or write data.
 
-Real-time communication—particularly the one-to-one messaging system—is powered by **Supabase Realtime**, which listens for database updates and instantly pushes new messages to both sender and receiver. Whenever a message is inserted into the `messages` table, Supabase automatically broadcasts the event to subscribed clients, allowing the chat interface to update live without manual refreshes. This approach eliminates the need for custom socket servers and greatly simplifies real-time updates.
+Real-time communication, particularly the one-to-one messaging system, is powered by **Supabase Realtime**, which listens for database updates and instantly pushes new messages to both sender and receiver. Whenever a message is inserted into the `messages` table, Supabase automatically broadcasts the event to subscribed clients, allowing the chat interface to update live without manual refreshes. This approach eliminates the need for custom socket servers and greatly simplifies real-time updates.
 
 ---
 
@@ -20,6 +20,6 @@ The YouCircle database schema is organized into five main tables: **users**, **l
 
 - The **messages** table stores all individual chat messages, including sender ID, content, read status, and the associated `conversation_id`.
 
-These relationships ensure that all user activity—posting items, starting conversations, and exchanging messages—remains securely tied to authenticated student accounts.
+These relationships ensure that all user activity like posting items, starting conversations, and exchanging messages remain securely tied to authenticated student accounts.
 
 <img width="2270" height="1424" alt="Database Schema" src="https://github.com/user-attachments/assets/e1ef30f0-ca93-431f-b8f7-1370291e87be" />
