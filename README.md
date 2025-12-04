@@ -69,4 +69,6 @@ to request the required credentials.
 
 For more details about the backend architecture, database design, and API usage, please refer to **Backend-Summary.md**.
 
+### Frontend and Backend Summary
 
+To learn more about the frontend and backend for this app, please read `Frontend-summary.md` and `Backend-summary.md`
