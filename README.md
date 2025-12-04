@@ -2,6 +2,8 @@
 
 YouCircle is a peer-to-peer campus marketplace where students can easily discover, book, and offer services, as well as purchase items directly from other students. By fostering affordability, convenience, and trust, YouCircle strengthens student connections while saving time and enhancing campus life and resources.
 
+👉 The app is live at: https://youcircle.netlify.app
+
 ## Project Objective
 YouCircle's main goal is to create a safe, student-driven ecosystem that allows peers to exchange services and goods easily. The platform aims to address the common challenges college students face — finding affordable, trustworthy, and accessible options for tutoring, personal services, and item exchanges, all within a verified student environment.
 
@@ -48,4 +50,13 @@ If not, visit:
 👉 http://localhost:3000
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+### ⚠️ Supabase Environment Keys Required
+
+To run YouCircle locally, you must provide your own Supabase environment variables 
+(`REACT_APP_SUPABASE_URL`, `REACT_APP_SUPABASE_ANON_KEY`, etc.).  
+These keys are not included in the repository for security purposes.
+
+If you need access for development or testing, please contact the project owner 
+to request the required credentials.
 
