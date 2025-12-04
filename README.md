@@ -20,6 +20,15 @@ YouCircle solves this by fostering a campus-only community where trust is built 
 
 t-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
+## Core Features Implemented
+
+- **Student-verified authentication** using Supabase restricted to `.edu` domains  
+- **Listing creation, editing, and deletion**, with full image upload support  
+- **Dedicated listing page** showing item details, seller information, and an option to message the seller  
+- **Category-based filtering and keyword search** for quick service and item discovery  
+- **Real-time messaging** between students using Supabase Realtime  
+- **User-specific pages** such as *Your Listings* and *Sold Listings*  
+- **Secure database operations** for storing listings, messages, and user metadata  
 
 ## Steps to Run the Project
 
