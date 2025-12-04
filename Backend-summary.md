@@ -21,3 +21,5 @@ The YouCircle database schema is organized into five main tables: **users**, **l
 - The **messages** table stores all individual chat messages, including sender ID, content, read status, and the associated `conversation_id`.
 
 These relationships ensure that all user activity—posting items, starting conversations, and exchanging messages—remains securely tied to authenticated student accounts.
+
+<img width="2270" height="1424" alt="Database Schema" src="https://github.com/user-attachments/assets/e1ef30f0-ca93-431f-b8f7-1370291e87be" />
