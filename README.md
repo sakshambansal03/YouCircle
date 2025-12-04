@@ -60,3 +60,6 @@ These keys are not included in the repository for security purposes.
 If you need access for development or testing, please contact the project owner 
 to request the required credentials.
 
+For more details about the backend architecture, database design, and API usage, please refer to **Backend-Summary.md**.
+
+
