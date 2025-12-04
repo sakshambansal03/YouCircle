@@ -18,8 +18,6 @@ Existing platforms like Facebook Marketplace, Craigslist, or Snapchat Marketplac
 
 YouCircle solves this by fostering a campus-only community where trust is built on verified student identities and safe in-app interactions.
 
-t-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
 ## Core Features Implemented
 
 - **Student-verified authentication** using Supabase restricted to `.edu` domains  
